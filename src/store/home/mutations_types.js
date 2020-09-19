@@ -1,0 +1,6 @@
+export const FETCH_CITY = 'FETCH_CITY'
+export const FETCH_DASHBOARD = 'FETCH_DASHBOARD'
+export const FETCH_TOP5 = 'FETCH_TOP5'
+export const FETCH_CARDS = 'FETCH_CARDS'
+export const FETCH_POSITION = 'FETCH_POSITION'
+export const FETCH_RECOMMEND = 'FETCH_RECOMMEND'

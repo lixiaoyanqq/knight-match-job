@@ -1,0 +1,1 @@
+export const FETCH_COMP_DETAIL = 'FETCH_COMP_DETAIL'

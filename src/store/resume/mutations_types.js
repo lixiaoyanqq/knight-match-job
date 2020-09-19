@@ -1,0 +1,7 @@
+export const FETCH_R_BASE_INFO = 'FETCH_R_BASE_INFO'
+export const FETCH_R_EDUEXPS = 'FETCH_R_EDUEXPS'
+export const FETCH_R_WORKS = 'FETCH_R_WORKS'
+export const FETCH_R_AWARDS = 'FETCH_R_AWARDS'
+export const FETCH_R_HOPE_INFO = 'FETCH_R_HOPE_INFO'
+export const FETCH_RESUMES = 'FETCH_RESUMES'
+export const FETCH_RESUME = 'FETCH_RESUME'
