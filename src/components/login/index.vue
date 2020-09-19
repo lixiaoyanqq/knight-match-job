@@ -102,7 +102,6 @@
                                 required
                                 rule="userCode"
                                 v-model="registerForm.userCode"
-                                label="短信验证码"
                                 name="userCode"
                                 placeholder="请输入短信验证码"
                                 :rules="userCodeRule">
@@ -111,7 +110,7 @@
                                     <van-button size="mini" v-else disabled type="primary">已发送{{countDown}}s</van-button>
                                 </template>
                             </van-field>
-                            <van-field v-show="isRegister" required class="userType" rule="userType" name="userType" label="注册类型">
+                            <van-field v-show="isRegister" required class="userType" rule="userType" name="userType">
                                 <template #input>
                                     <van-radio-group v-model="registerForm.userType" direction="horizontal">
                                     <van-radio name="0">个人</van-radio>
