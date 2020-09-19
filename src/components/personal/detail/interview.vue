@@ -5,7 +5,11 @@
                  :border='false'
                  @click-left="onClickLeft"
                  left-arrow
-                 style="height:2.5rem" />
+                 style="height:4rem">
+            <template #left>
+                <van-icon :name="leftIcon" size="20" />
+            </template>
+        </van-nav-bar>
         <section class="interview-list">
             <!-- <h1 class="interview-tit">
                 职位
@@ -50,6 +54,7 @@ import { BASE_URL } from 'api/config'
 export default {
     data () {
         return {
+            leftIcon: require("common/image/home/lefticon.png"),
             baseInfo: JSON.parse(getLocalStore('baseInfo')),
             recruitStatus: this.$route.query.recruitStatus || null,
             interviews: []
@@ -105,7 +110,7 @@ export default {
     z-index 999
     overflow-y scroll
 .interview-list
-    margin-top 3rem
+    margin-top 4rem
     width 90%
     margin 3rem auto
     color #000000

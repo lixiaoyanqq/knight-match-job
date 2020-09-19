@@ -162,11 +162,11 @@ export default {
     return {
       feedback: false,
       accept:'.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      randomNickname: "",
+      randomNickname: "我的名字",
       deliveryIcon: require("common/image/position/delivery.png"),
       userInfo: JSON.parse(getLocalStore("baseInfo")) || { userStatus: "0" },
       userBaseInfo: '',
-      userHead: require("common/image/personal/user-head.png"),
+      userHead: '',
       rightIconW: require("common/image/personal/right-w.png"),
       rightIconR: require("common/image/personal/right-r.png"),
       myPanel: [],
@@ -290,43 +290,41 @@ export default {
       }
     },
     // 获取指定范围内的随机数
-    randomAccess(min, max) {
-      return Math.floor(Math.random() * (min - max) + max)
-    },
+    // randomAccess(min, max) {
+    //   return Math.floor(Math.random() * (min - max) + max)
+    // },
     // 解码
-    decodeUnicode (str) {
-        //Unicode显示方式是\u4e00
-        str = "\\u"+str
-        str = str.replace(/\\/g, "%")
-        // 转换中文
-        str = unescape(str)
-        //将其他受影响的转换回原来
-        str = str.replace(/%/g, "\\")
-        return str
-    },
+    // decodeUnicode (str) {
+    //     //Unicode显示方式是\u4e00
+    //     str = "\\u"+str
+    //     str = str.replace(/\\/g, "%")
+    //     // 转换中文
+    //     str = unescape(str)
+    //     //将其他受影响的转换回原来
+    //     str = str.replace(/%/g, "\\")
+    //     return str
+    // },
     //要获取的名字长度
-    getRandomName (NameLength) {
-        for(let i = 0;i<NameLength;i++){
-            let unicodeNum  = ""
-            unicodeNum = this.randomAccess(0x4e00,0x9fa5).toString(16)
-            this.randomNickname += this.decodeUnicode(unicodeNum)
-        }
-    },
+    // getRandomName (NameLength) {
+    //     for(let i = 0;i<NameLength;i++){
+    //         let unicodeNum  = ""
+    //         unicodeNum = this.randomAccess(0x4e00,0x9fa5).toString(16)
+    //         this.randomNickname += this.decodeUnicode(unicodeNum)
+    //     }
+    // },
     async getUserBaseInfo () {
       let data = await userApi.fetchUserBaseInfo()
       if (data.code === '200') {
         this.userBaseInfo = data.content
-        //本地开发
-        this.userHead = `${BASE_URL}${this.userBaseInfo.profilePicture}`
-        //打包部署
-        // this.userHead = require(`${this.userBaseInfo.profilePicture}`)
+        this.userBaseInfo.profilePicture ? this.userHead = `${BASE_URL}${this.userBaseInfo.profilePicture}` : 
+        this.userHead = require("common/image/personal/user-head.png")
       }
     }
   },
   mounted() {
     this.init();
     this.getUserBaseInfo()
-    this.getRandomName(this.nameLength)
+    // this.getRandomName(this.nameLength)
     // console.log('this.userInfo',this.userInfo)
   },
   watch: {

@@ -204,6 +204,12 @@ export default {
       if (getLocalStore("searchRKey")) {
         this.getSearchList();
       }
+      if (getLocalStore("searchCKey")) {
+        let cityObj = this.option.find(item => {
+          return item.text === getLocalStore("searchCKey")
+        });
+        this.value = cityObj.value
+      }
     },
     loadHeight() {
       let winHeight = document.documentElement.clientHeight;

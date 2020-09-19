@@ -5,8 +5,12 @@
                  :border='false'
                  @click-left="onClickLeft"
                  left-arrow
-                 style="height:2.5rem" />
-        <section class="desc-swipe">
+                 style="height:4rem">
+            <template #left>
+                <van-icon :name="leftIcon" size="20" />
+            </template>
+        </van-nav-bar>
+        <!-- <section class="desc-swipe">
             <van-swipe class="my-swipe" :width="'100%'" :height="200" :autoplay="3000" indicator-color="white">
                 <van-swipe-item v-for="(image, index) in images" :key="index">
                     <div class="resume-pic">
@@ -14,6 +18,11 @@
                     </div>
                 </van-swipe-item>
             </van-swipe>
+        </section> -->
+        <section class="company-logo">
+            <div class="head-portrait">
+              <img :src="userHead" />
+            </div>
         </section>
         <section class="resume-name">
             <van-row>
@@ -163,7 +172,9 @@
 import { Dialog, Toast } from 'vant'
 import * as resuemeType from 'store/resume/mutations_types'
 import * as resumeApi from 'api/resume'
+import * as userApi from 'api/user'
 import { mapState, mapActions } from 'vuex'
+import { BASE_URL } from 'api/config'
 export default {
     components: {
         Dialog,
@@ -171,6 +182,7 @@ export default {
     },
     data () {
         return {
+            leftIcon: require("common/image/home/lefticon.png"),
             schoolImg: 'https://img.yzcdn.cn/vant/cat.jpeg',
             images: [
                 require('common/image/detail/personal-pic.png'),
@@ -185,7 +197,8 @@ export default {
                 { text: '兼职', value: '02' },
                 { text: '实习', value: '03' }
             ],
-            resumeHopeInfo: {}
+            resumeHopeInfo: {},
+            userHead: '',
         }
     },
     computed: {
@@ -218,7 +231,7 @@ export default {
         },
         async getResumeHopeInfo() {
             let data = await this.fetchResumeHope()
-            if (data.code === '200') {
+            if (data.code === '200' && data.content.expectJobNature) {
                 let val = data.content.expectJobNature
                 let valObject = this.jobNature.find( item => item.value === val)
                 let valText = valObject.text
@@ -314,9 +327,18 @@ export default {
             this.isBaseInfo = false,
             this.isSelfAppraisal = false
             this.isEducation = false
+        },
+        async getUserBaseInfo () {
+            let data = await userApi.fetchUserBaseInfo()
+            if (data.code === '200') {
+                this.userBaseInfo = data.content
+                this.userBaseInfo.profilePicture ? this.userHead = `${BASE_URL}${this.userBaseInfo.profilePicture}` : 
+                this.userHead = require("common/image/personal/user-head.png")
+            }
         }
     },
     mounted(){
+        this.getUserBaseInfo()
         this.getResumeBaseInfo()
         this.getResumeHopeInfo()
         this.getResumeEduexps()
@@ -328,8 +350,13 @@ export default {
 <style lang="stylus" scoped>
 @import "~common/stylus/mixin"
 @import "~common/stylus/variable"
-.desc-swipe
-    margin-top 2.5rem
+.company-logo
+    margin-top 4rem
+    text-align center
+    width 100%
+    padding 30px 0
+.head-portrait
+    margin 0 auto
 .resume-detail
     padding-bottom 80px
     position fixed
@@ -461,4 +488,18 @@ export default {
     margin 0 auto
 .hope-infor .van-tag
     margin 3px 0
+.head-portrait {
+  width: 80px;
+  height: 80px;
+  border-radius: 40px;
+  overflow: hidden;
+}
+
+.head-portrait img {
+  width: 100%;
+  height: 100%;
+}
+.hope-message
+    color #000000
+    padding-left 10px
 </style>

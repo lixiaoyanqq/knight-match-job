@@ -5,7 +5,11 @@
             :border='false'
             @click-left="onClickLeft"
             left-arrow
-            style="height:2.5rem" />
+            style="height:4rem" >
+            <template #left>
+                <van-icon :name="leftIcon" size="20" />
+            </template>
+        </van-nav-bar>
         <section class="interview-info">
             <van-cell-group class="operation-list">
                 <van-cell :value="interviewDetail.iviewContacts">
@@ -73,6 +77,7 @@ import { Toast } from 'vant'
 export default {
     data () {
         return {
+            leftIcon: require("common/image/home/lefticon.png"),
             userInfo: JSON.parse(getLocalStore("baseInfo")) || { userStatus: "0" },
             recruitId: this.$route.query.recruitId || null,
             interviewDetail: ''
@@ -123,7 +128,7 @@ export default {
     z-index: 999;
     overflow-y scroll
 .interview-info
-    margin-top 2.5rem
+    margin-top 4rem
 .operation-list .van-cell {
     padding 0 16px
     line-height 80px

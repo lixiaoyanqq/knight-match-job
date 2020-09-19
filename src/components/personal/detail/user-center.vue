@@ -1,11 +1,15 @@
 <template>
     <div class="user-center">
         <van-nav-bar title="用户中心"
-                 fixed
-                 :border='false'
-                 @click-left="onClickLeft"
-                 left-arrow
-                 style="height:2.5rem" />
+            fixed
+            :border='false'
+            @click-left="onClickLeft"
+            left-arrow
+            style="height:4rem">
+            <template #left>
+                <van-icon :name="leftIcon" size="20" />
+            </template>
+        </van-nav-bar>
         <section class="user-baseinfo">
             <van-form v-model="userForm" enctype="multipart/form-data">
                 <van-cell-group class="operation-list">
@@ -19,7 +23,7 @@
                                 :after-read="afterRead" />
                         </template>
                     </van-cell>
-                    <van-cell @click="editNikeName" :value="userBaseInfo.nickName" is-link>
+                    <van-cell @click="editNikeName" :value="userBaseInfo.nickName || '我的名字'" is-link>
                         <template #title>
                             <span class="custom-title">昵称</span>
                         </template>
@@ -31,13 +35,10 @@
             <div class="form-header">
                 <van-row>
                     <van-col span="2">
-                        <van-icon @click="onCancelEdit" size="24" name="close" />
+                        <van-icon @click="onCancelEdit" size="20" :name="leftIcon" />
                     </van-col>
                     <van-col span="20">
                         <span>修改用户名</span>
-                    </van-col>
-                    <van-col span="2">
-                        <van-icon @click="onSaveEdit" size="24" name="passed" />
                     </van-col>
                 </van-row>
             </div>
@@ -45,6 +46,11 @@
                 <van-cell-group>
                     <van-field v-model="nickName" placeholder="请输入用户名" />
                 </van-cell-group>
+            </div>
+            <div class="login-btn">
+                <van-button round @click="onSaveEdit" block type="info" color="linear-gradient(to right, #2739c8, #f51e67)">
+                    保存
+                </van-button>
             </div>
         </van-popup>
     </div>
@@ -59,12 +65,9 @@ export default {
         return {
             nickName: '',
             isShow: false,
+            leftIcon: require("common/image/home/lefticon.png"),
             userForm:{
-                userHead: [
-                    { 
-                        url:require("common/image/personal/user-head.png") 
-                    }
-                ]
+                userHead: []
             },
             userBaseInfo: ''
         }
@@ -117,15 +120,18 @@ export default {
             if (data.code === '200') {
                 this.userBaseInfo = data.content
                 this.userForm.userHead = []
-                // 本地开发
-                let headerpic = {
-                    url: `${BASE_URL}${this.userBaseInfo.profilePicture}`
+                if (this.userBaseInfo.profilePicture) {
+                    let headerpic = {
+                        url: `${BASE_URL}${this.userBaseInfo.profilePicture}`
+                    }
+                    this.userForm.userHead.push(headerpic)
+                } else {
+                   let headerpic = {
+                        url: require("common/image/personal/user-head.png")
+                    } 
+                    this.userForm.userHead.push(headerpic)
                 }
-                // 打包部署
-                // let headerpic = {
-                //     url: require(`${this.userBaseInfo.profilePicture}`)
-                // }
-                this.userForm.userHead.push(headerpic)
+                
             }
         }
     },
@@ -145,13 +151,7 @@ export default {
     z-index: 999;
     overflow-y scroll
 .user-baseinfo
-    margin-top 2.5rem
-
-// .operation-list {
-//   width: 90%;
-//   margin: 30px auto;
-// }
-
+    margin-top 4rem
 .operation-list .van-cell {
     padding 0 16px
     line-height 80px
@@ -172,15 +172,16 @@ export default {
     color #000000
     background #e6e9f5
 .form-header
-    height 2.5rem
+    height 4rem
     background #ffffff
     text-align center
     font-size 18px
-    line-height 2.5rem
+    line-height 4rem
 .form-header span
     margin-top 15px
 .form-header .van-icon
-    margin-top 8px
+    position relative
+    top 5px
 .form-body .van-field
     height auto
     background #e6e9f5
@@ -188,4 +189,7 @@ export default {
 .form-body .van-hairline-unset--top-bottom::after
     border-color #cccccc
     border-top-width 0
+.login-btn
+    width 50%
+    margin 20px auto
 </style>

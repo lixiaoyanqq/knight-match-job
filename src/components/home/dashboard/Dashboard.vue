@@ -164,6 +164,7 @@ import { mapState, mapActions, mapMutations } from 'vuex'
 import { getLocalStore } from 'utils/global'
 
 export default {
+  inject: ['reload'],
   components: {
     BarEchart
   },
@@ -278,6 +279,11 @@ export default {
   },
   created(){
     this.dashboardData()
+  },
+  watch: {
+    $route (to) {
+        this.reload()
+    }
   }
 };
 </script>

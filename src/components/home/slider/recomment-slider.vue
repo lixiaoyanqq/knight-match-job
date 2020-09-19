@@ -200,9 +200,9 @@ export default {
     font-size 16px
     line-height 14px
     width 62px
-    height 12px
+    height 16px
     padding 0.4rem
-    border-radius 0.6rem
+    border-radius 8rem
     background linear-gradient(to right, #2739c8, #f51e67)
 .menuAll
     display inline-block

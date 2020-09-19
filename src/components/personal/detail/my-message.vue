@@ -5,7 +5,11 @@
                  :border='false'
                  @click-left="onClickLeft"
                  left-arrow
-                 style="height:2.5rem" />
+                 style="height:4rem" >
+            <template #left>
+                <van-icon :name="leftIcon" size="20" />
+            </template>
+        </van-nav-bar>
         <section class="msg-tabs">
             <van-tabs v-model="activeName">
                 <van-tab title="投递信息" name="sendMsg">
@@ -34,6 +38,7 @@
 export default {
     data () {
         return {
+            leftIcon: require("common/image/home/lefticon.png"),
             activeName: 'sendMsg',
             sendMsgs: [],
             news: [],
@@ -58,5 +63,5 @@ export default {
     z-index: 999;
     overflow-y scroll
 .msg-tabs
-    margin-top 2.5rem
+    margin-top 4rem
 </style>

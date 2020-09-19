@@ -28,6 +28,7 @@
                                 v-model="loginForm.password" 
                                 name="password" 
                                 type="password"
+                                autocomplete=“off”
                                 placeholder="密码"
                                 :rules="password_Rule">
                             </van-field>

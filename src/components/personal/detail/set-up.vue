@@ -5,7 +5,11 @@
                  :border='false'
                  @click-left="onClickLeft"
                  left-arrow
-                 style="height:2.5rem" />
+                 style="height:4rem">
+            <template #left>
+                <van-icon :name="leftIcon" size="20" />
+            </template>
+        </van-nav-bar>
         <div class="set-item">
             <van-cell-group>
                 <van-cell @click="onEditPassword" title="修改密码" is-link />
@@ -18,13 +22,10 @@
             <div class="form-header">
                 <van-row>
                     <van-col span="2">
-                        <van-icon @click="onCancelPassword" size="24" name="close" />
+                        <van-icon @click="onCancelPassword" size="20" :name="leftIcon" />
                     </van-col>
                     <van-col span="20">
                         <span>修改密码</span>
-                    </van-col>
-                    <van-col span="2">
-                        <van-icon @click="onSavePassword" size="24" name="passed" />
                     </van-col>
                 </van-row>
             </div>
@@ -34,6 +35,11 @@
                     <van-field v-model="password" label="原始密码" placeholder="原始密码" />
                     <van-field v-model="newPassword" label="新密码" placeholder="新密码" />
                 </van-cell-group>
+            </div>
+            <div class="login-btn">
+                <van-button round @click="onSavePassword" block type="info" color="linear-gradient(to right, #2739c8, #f51e67)">
+                    保存
+                </van-button>
             </div>
         </van-popup>
     </div>
@@ -46,6 +52,7 @@ import { Dialog, Toast } from 'vant'
 export default {
     data () {
         return {
+            leftIcon: require("common/image/home/lefticon.png"),
             userBaseInfo: '',
             isShow: false,
             mobile: '',
@@ -118,7 +125,7 @@ export default {
     z-index: 999;
     overflow-y scroll
 .set-item
-    margin-top 2.5rem
+    margin-top 4rem
 .set-item .van-cell
     padding 0 16px
     line-height 80px
@@ -146,11 +153,11 @@ export default {
     color #000000
     background #e6e9f5
 .form-header
-    height 2.5rem
+    height 4rem
     background #ffffff
     text-align center
     font-size 18px
-    line-height 2.5rem
+    line-height 4rem
 .form-header span
     margin-top 15px
 .form-header .van-icon
@@ -164,4 +171,7 @@ export default {
     border-top-width 0
 .form-body .van-cell::after
     border-bottom-color black
+.login-btn
+    width 50%
+    margin 20px auto
 </style>

@@ -5,7 +5,11 @@
                  :border='false'
                  @click-left="onClickLeft"
                  left-arrow
-                 style="height:2.5rem" />
+                 style="height:4rem">
+            <template #left>
+                <van-icon :name="leftIcon" size="20" />
+            </template>
+        </van-nav-bar>
         <section class="company-logo">
             <div class="upload-box">
                 <van-uploader
@@ -115,6 +119,7 @@ export default {
             select: '',
             entpType: '',
             personScope: '',
+            leftIcon: require("common/image/home/lefticon.png"),
             uploader: [{ url: 'https://img.yzcdn.cn/vant/leaf.jpg' }], 
             uploadEmptLogoUrl: '',
             compForm: {
@@ -232,7 +237,7 @@ export default {
     overflow-y scroll
 .company-logo
     text-align center
-    margin-top 2.5rem
+    margin-top 4rem
     width 100%
     padding 30px 0
 .company-logo h1 
