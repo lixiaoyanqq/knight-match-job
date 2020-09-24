@@ -12,7 +12,10 @@
                 <van-swipe-item  v-for="(top, index) in postTop5" :key="index">
                     <div :class="'slider-card' + (index + 1)" class="slider-card">
                         <div class="slider-content">
-                            <h1 class="view-value" @click="onPosDetail(top.id)">{{top.postName}}</h1>
+                            <h1 class="view-value" @click="onPosDetail(top.id)">
+                                {{top.postName}}
+                                <van-icon size="22" name="https://icon.qiantucdn.com/static/images/index/banner-download-entry4.gif" />
+                            </h1>
                             <p class="view-value">{{top.entpName}}</p>
                             <p>{{top.reflushFmtTime}}</p>
                             <p class="view-value">{{top.city}}</p>
@@ -27,7 +30,10 @@
                 <van-swipe-item  v-for="(top, index) in resumeTop5" :key="index">
                     <div :class="'slider-card' + (index + 1)" class="slider-card">
                         <div class="slider-content">
-                            <h1 @click="onResDetail(top.cvId)">{{top.name || '-'}}</h1>
+                            <h1 @click="onResDetail(top.cvId)">
+                                {{top.name || '-'}}
+                                <van-icon name="https://icon.qiantucdn.com/static/images/index/banner-download-entry4.gif" />
+                            </h1>
                             <p>{{top.schoolName || '-'}}</p>
                             <p>{{top.degree || '-'}}</p>
                             <p>{{top.major || '-'}}</p>
@@ -89,7 +95,7 @@ export default {
                     postId: this.idkey ? this.idkey.toString() : ''
                 }
                 let data = await homeApi.applicantTop(parmsr)
-                if(data.code === '200') {
+                if(data && data.code === '200') {
                     this.resumeTop5 = data.content.listx
                 }
             }
@@ -168,6 +174,9 @@ export default {
     line-height 32px
     font-weight bolder
     padding 0 10px
+.slider-content h1 .van-icon
+    position relative
+    top 3px
 .slider-content p
     line-height 24px
     padding 0 10px

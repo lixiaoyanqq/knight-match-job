@@ -5,8 +5,12 @@
                  :border='false'
                  @click-left="onClickLeft"
                  left-arrow
-                 style="height:2.5rem" />
-        <section class="desc-swipe">
+                 style="height:4rem" >
+            <template #left>
+                <van-icon :name="leftIcon" size="20" />
+            </template>
+        </van-nav-bar>
+        <!-- <section class="desc-swipe">
             <van-swipe class="my-swipe" :width="'100%'" :height="200" :autoplay="3000" indicator-color="white">
                 <van-swipe-item v-for="(image, index) in images" :key="index">
                     <div class="resume-pic">
@@ -14,6 +18,11 @@
                     </div>
                 </van-swipe-item>
             </van-swipe>
+        </section> -->
+        <section class="company-logo">
+            <div class="head-portrait">
+              <img :src="userHead" />
+            </div>
         </section>
         <section class="resume-name">
             <van-row>
@@ -131,6 +140,7 @@ import * as resumeApi from 'api/resume'
 import * as userApi from 'api/user'
 import { mapState, mapActions } from 'vuex'
 import { getLocalStore } from "utils/global"
+import { BASE_URL } from 'api/config'
 export default {
     inject: ['reload'],
     components: {
@@ -139,6 +149,7 @@ export default {
     },
     data () {
         return {
+            leftIcon: require("common/image/home/lefticon.png"),
             userInfo: JSON.parse(getLocalStore("baseInfo")) || { userStatus: "0" },
             id: this.$route.query.id || null,
             cvId: this.$route.query.cvId || null,
@@ -155,7 +166,8 @@ export default {
                 require('common/image/detail/personal-pic.png'),
                 require('common/image/detail/personal-pic.png'),
                 require('common/image/detail/personal-pic.png'),
-            ]
+            ],
+            userHead: ''
         }
     },
     computed: {},
@@ -214,6 +226,12 @@ export default {
         },
         initData(data){
             this.resemeBaseInfo = data.resumeBaseInfoDto
+            if(this.resemeBaseInfo.userHeadPic) {
+                this.userHead = `${BASE_URL}${this.resemeBaseInfo.userHeadPic}`
+            } else {
+                this.userHead = require("common/image/home/default-avatar.jpeg")
+            }
+            console.log('this.resemeBaseInfo',this.resemeBaseInfo)
             this.resumeExpectDto = data.expectDto
             this.resuemEduexps = data.eduExpList
             this.resumeWorks = data.jobExpList
@@ -235,8 +253,23 @@ export default {
 <style lang="stylus" scoped>
 @import "~common/stylus/mixin"
 @import "~common/stylus/variable"
-.desc-swipe
-    margin-top 2.5rem
+.company-logo
+    margin-top 4rem
+    text-align center
+    width 100%
+    padding 30px 0
+.head-portrait {
+    margin 0 auto
+    width: 80px;
+    height: 80px;
+    border-radius: 40px;
+    overflow: hidden;
+}
+
+.head-portrait img {
+  width: 100%;
+  height: 100%;
+}
 .resume-detail
     padding-bottom 80px
     position fixed

@@ -7,7 +7,24 @@ export function transformTermtoArray (term = {}){
     })
     return res
   }
+
+export function extractTypesArry (arry = []){
+  console.log('arry',arry)
+    let res = {
+      postType: [],
+      postNum: [],
+      deliverNum: []
+
+    }
+    arry.map((item, index)=>{
+        res.postType.push(item.postType)
+        res.postNum.push(item.postNum)
+        res.deliverNum.push(item.deliverNum)
+    })
+    return res
+}
 export function extractKeyArry (arry = []){
+  console.log('arry',arry)
     let res = {
         key: [],
         val: []
@@ -16,6 +33,7 @@ export function extractKeyArry (arry = []){
         res.key.push(item.key)
         res.val.push(item.value)
     })
+    console.log('res',res)
     return res
 }
 

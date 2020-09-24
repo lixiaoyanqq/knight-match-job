@@ -1,17 +1,19 @@
 <template>
   <div class="dashboard">
+    
     <section class="dashboard-main">
+      <van-notice-bar v-if="baseInfo.userType === '1'" mode="closeable">请先完善公司信息，才能发布职位哦！！！</van-notice-bar>
       <van-row>
         <van-col span="10">
           <div class="list-header">
             <van-row>
               <van-col span="14">
-                <span class="list-header-tit">{{baseInfo.userType === '0' ? '我的简历' : '我的公司'}}
-                </span>
+                <span class="list-header-tit" v-if="baseInfo.userType === '0'">我的简历</span>
+                <van-button v-else type="primary" round size="mini" @click="onMyCompany">我的公司</van-button>
               </van-col>
               <van-col span="10">
                 <van-button v-show="baseInfo.userType === '0'" type="primary" round size="mini" @click="onClickResume">完善简历</van-button>
-                <van-button v-show="baseInfo.userType === '1'" type="primary" round size="mini" @click="onClickCompany">职位管理</van-button>
+                <van-button v-show="baseInfo.userType === '1'" type="primary" :disabled="!conmanyDetail.id" round size="mini" @click="onClickCompany">职位管理</van-button>
               </van-col>
             </van-row>
           </div>
@@ -125,7 +127,7 @@
         </van-col>
         <van-col span="8">
             <div class="view-main">
-                <h1>{{baseInfo.userType === '0' ? '重点推荐' : '学历匹配'}}</h1>
+                <h1>{{baseInfo.userType === '0' ? '匹配岗位' : '学历匹配'}}</h1>
                 <van-slider disabled v-model="sliderBtn" bar-height="8px" class="slider-box1" active-color="-webkit-gradient(linear, 0 0, 100% 100%, from(#f86e98), to(#fbcadb))">
                     <template #button>
                         <div class="custom-button">
@@ -133,7 +135,7 @@
                         </div>
                     </template>
                 </van-slider>
-                <p class="view-value">{{baseInfo.userType === '0' ? '5' : dashboard.edus || '-'}}</p>
+                <p class="view-value">{{baseInfo.userType === '0' ? '100+' : dashboard.edus || '-'}}</p>
             </div>
         </van-col>
         <van-col span="8">
@@ -162,7 +164,8 @@ import * as homeUtil from "components/home/services/home"
 import * as type from 'store/user/mutations_types'
 import { mapState, mapActions, mapMutations } from 'vuex'
 import { getLocalStore } from 'utils/global'
-
+import * as compApi from 'api/company'
+import { setLocalStore } from "utils/global";
 export default {
   inject: ['reload'],
   components: {
@@ -186,25 +189,27 @@ export default {
       enterviewRate: null,
       dashboard: {},
       resumeTooltip : ['数量', '占比'],
-      compTooltip : ['投递', '预约面试'],
+      compTooltip : ['职位数量', '投递数量'],
       typeNamesItem: [],
       sliderBtn: 50,
-      typeNames: ["项目经历", "潜力", "求职目标", "教育", "工作经历", "基本信息"],
-      compTypeName: ['技术岗','科研岗','市场岗','设计岗','销售岗','培训岗','运营岗'],
+      typeNames: [],
+      compTypeName: [],
+      shabi: '',
       typeValue: {
-        'number': [10, 7, 8, 4, 9],
-        'rate': [6, 5, 8, 7, 4, 5]
+        'number': [],
+        'rate': []
       },
       compTypeValues: {
-        'number': [10, 7, 8, 4, 5, 4, 7],
-        'rate': [6, 5, 8, 7, 4, 4, 6]
+        'deliverNum': [],
+        'postNum': []
       },
       currentRate: 40,
       gradientColor: {
         "0%": "#2739c8",
         "100%": "#7c86e6"
       },
-      postArray: []
+      postArray: [],
+      conmanyDetail: ''
     };
   },
   computed: {
@@ -217,45 +222,41 @@ export default {
       // console.log('baseInfo',this.baseInfo)
       if(this.baseInfo.userType && this.baseInfo.userType === '0'){
         let data = await dashboardApi.getDashboard()
-        // console.log('data',data)
         if(data && data.content){
           this.dashboard = data.content
           this.perfection = Number(data.content.perfection)
           this.extractResumeTerms()
-          this.extractResume()
+          // this.extractResume()
         }
         let expectData = await dashboardApi.getCity()
         if(expectData.code === '200'){
           this.myExpect = expectData.content
         }
-          // console.log('expectData---',expectData)
-        //个人接口数据
       } else if (this.baseInfo.userType && this.baseInfo.userType === '1'){
-        //公司接口数据
-        // console.log('企业的')
         let data =  await dashboardApi.getCompDashboard()
         if(data && data.content){
-          // console.log('data',data)
           this.dashboard = data.content
           this.enterviewRate = Number(data.content.enterviewRate)
           this.entryRate = Number(data.content.entryRate)
           this.postArray = data.content.postArray
+          this.postArray.map(item => {
+            this.compTypeName.push(item.postType)
+            this.compTypeValues.deliverNum.push(item.deliverNum)
+            this.compTypeValues.postNum.push(item.postNum)
+          })
         }
-        
-        // console.log('企业的data', this.dashboard)
       }
+    },
+    onMyCompany() {
+      this.$router.push({ name: "myCompany" });
     },
     extractResumeTerms(){
       if(this.dashboard && this.dashboard.myscores){
         this.typeNamesItem = homeUtil.transformTermtoArray(this.dashboard.myscores)
-        this.typeNames = homeUtil.extractKey(this.typeNamesItem)
-        // console.log('this.typeNames',this.typeNames)
-      }
-    },
-    extractResume(){
-      if(this.typeNames.length){
-        this.typeValue.number = homeUtil.extractKeyArry(this.typeNames).val
-        // console.log('this.typeValue',this.typeValue)
+        this.typeNamesItem.map(item => {
+          this.typeNames.push(item.key)
+          this.typeValue.number.push(item.value)
+        })
       }
     },
     onClickResume(){
@@ -272,6 +273,12 @@ export default {
       this.$refs.ringEchartCompPerfection.$el.childNodes[0].setAttribute('viewBox', '-50, 0 1250 1150')
       this.$refs.ringEchartCompEntry.$el.childNodes[0].setAttribute('viewBox', '-50, 0 1150 1150')
       this.$refs.ringEchartCompEnterView.$el.childNodes[0].setAttribute('viewBox', '-50, 0 1150 1150')
+    },
+    async companyDesc () {
+      let data = await compApi.getMyEntp()
+      if(data && data.code === '200') {
+        this.conmanyDetail = data.content
+      }
     }
   },
   mounted(){
@@ -279,6 +286,7 @@ export default {
   },
   created(){
     this.dashboardData()
+    this.companyDesc()
   },
   watch: {
     $route (to) {
@@ -373,4 +381,6 @@ export default {
 .list-content .van-cell .van-cell__title
 // .list-content .van-cell .van-cell__value
   font-size 20px
+.dashboard-main .van-notice-bar
+  width 80%
 </style>

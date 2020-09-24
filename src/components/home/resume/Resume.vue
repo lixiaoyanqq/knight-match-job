@@ -36,16 +36,23 @@
             </van-row>
         </section>
         <section class="hope-infor">
+            <h1>
+                <van-row>
+                    <van-col span="20">
+                        <span>期望信息</span>
+                    </van-col>
+                    <van-col span="4">
+                        <van-button class="opr-btn" @click="editHope(resemeBaseInfo.id)" size="mini" :icon="editIcon" />
+                    </van-col>
+                </van-row>
+            </h1>
             <van-row>
-                <van-col span="20">
+                <van-col span="24">
                     <van-tag round v-if="resumeHopeInfo.expectCitys"  size="medium" color="#88a1ef">{{resumeHopeInfo.expectCitys}}</van-tag>
                     <van-tag round v-if="resumeHopeInfo.expectJobText"   size="medium" color="#f86e99">{{resumeHopeInfo.expectJobText}}</van-tag>
                     <van-tag round v-if="resumeHopeInfo.expectPosts"  size="medium" color="#f1bd39">{{resumeHopeInfo.expectPosts}}</van-tag>
                     <van-tag round v-if="resumeHopeInfo.expectSalary"   size="medium" color="#88a1ef">{{resumeHopeInfo.expectSalary}}</van-tag>
                     <van-tag round v-if="resumeHopeInfo.expectTerritorys"   size="medium" color="#f86e99">{{resumeHopeInfo.expectTerritorys}}</van-tag>
-                </van-col>
-                <van-col span="4">
-                    <van-button class="opr-btn" @click="editHope(resemeBaseInfo.id)" size="mini" :icon="editIcon" />
                 </van-col>
             </van-row>
         </section>
@@ -394,6 +401,8 @@ export default {
     // box-shadow 0 2px 6px 0 #4a4c50
 .opr-btn .van-icon
     font-size 20px
+.resume-name,
+.hope-infor,
 .personal-profile, 
 .education, 
 .work-experience,
@@ -404,6 +413,7 @@ export default {
     background #ffffff
     border-radius 10px
     margin-top 10px
+.hope-infor h1,
 .personal-profile h1, 
 .education h1, 
 .work-experience h1,
@@ -411,6 +421,7 @@ export default {
     height 24px
     line-height 24px
     color #000000
+.hope-infor h1 span,
 .personal-profile h1 span, 
 .education h1 span, 
 .work-experience h1 span,
@@ -482,10 +493,6 @@ export default {
 .van-button--default
     background none 
     border none
-.hope-infor
-    width 90%
-    padding 10px 0
-    margin 0 auto
 .hope-infor .van-tag
     margin 3px 0
 .head-portrait {

@@ -14,6 +14,8 @@ export default {
     [type.CLEAR_STORAGE] () {
         const name = 'baseInfo'
         removeLocalStore(name)
+        removeLocalStore('typeValue')
+        removeLocalStore('typeNames')
     },
     [type.SET_SEARCH_RESUME_ID] (state, id = null) {
         state.searchKey.searchResumeIdKey = id

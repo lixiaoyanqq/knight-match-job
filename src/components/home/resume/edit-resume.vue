@@ -5,7 +5,11 @@
                  :border='false'
                  @click-left="onClickLeft"
                  left-arrow
-                 style="height:2.5rem" />
+                 style="height:4rem">
+            <template #left>
+                <van-icon :name="leftIcon" size="20" />
+            </template>
+        </van-nav-bar>
         <van-form @submit="onSubmit" v-model="resumeForm" ref="resumeForm" label-width="100">
             <van-cell-group class="base-info-group" v-if="isBaseInfo">
                 <van-field v-model="resumeForm.actualName" name="actualName" label="用户名" placeholder="请输入用户名"></van-field>
@@ -245,6 +249,7 @@ export default {
             isEducation: this.$route.query.isEducation || false,
             isWork: this.$route.query.isWork || false,
             isAward: this.$route.query.isAward || false,
+            leftIcon: require("common/image/home/lefticon.png"),
             timeName: '',
             birthValue: '',
             birthYear: '',
@@ -507,7 +512,7 @@ export default {
     background-color: #f5f5f5;
     z-index: 199;
 .van-form
-    margin-top 2.5em
+    margin-top 4rem
 .timeClass
     color: #333;
 .van-field

@@ -120,7 +120,7 @@ export default {
             entpType: '',
             personScope: '',
             leftIcon: require("common/image/home/lefticon.png"),
-            uploader: [{ url: 'https://img.yzcdn.cn/vant/leaf.jpg' }], 
+            uploader: [], 
             uploadEmptLogoUrl: '',
             compForm: {
                 entpName: '',
@@ -151,16 +151,26 @@ export default {
             this.fetchCompDesc().then(res => {
             //    console.log('res111',res.content)
                this.compForm = this._.merge({}, res.content)
-            //    console.log('this.compForm',this.compForm)
-               this.entpType = this.entpTypes[Number(this.compForm.entpType) -1]
-               this.personScope = this.personScopes[Number((this.compForm.personScope).substring(1)) -1]
-               let logUrl ={
-                   url: `${BASE_URL}${this.compForm.entpLogo}`
+               if (this.compForm.id) {
+                    this.entpType = this.entpTypes[Number(this.compForm.entpType) -1]
+                    this.personScope = this.personScopes[Number((this.compForm.personScope).substring(1)) -1]
+                    let logUrl ={
+                        url: `${BASE_URL}${this.compForm.entpLogo}`
+                    }
+                    this.uploader.push(logUrl)
+               } else {
+                   console.log('初始化头像')
+                   let difaultPic = {
+                        // url: require("common/image/home/default-avatar.jpeg")
+                        url: require("common/image/personal/user-head.png")
+                   }
+                   this.uploader.push(difaultPic)
                }
-               this.uploader.push(logUrl)
+               
             //    console.log('this.entpType',this.entpType)
             //    console.log('this.personScope',this.personScope)
             })
+            console.log('this.uploader',this.uploader)
         },
         onClickLeft(){
             this.$router.back()

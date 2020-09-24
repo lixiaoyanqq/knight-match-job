@@ -146,6 +146,7 @@ export default {
         });
         setLocalStore("searchPKey", this.searchKey);
         setLocalStore("searchCKey", cityObj.text);
+        this.positions = []
         this.getSearchList();
       }
     },
@@ -188,7 +189,7 @@ export default {
       let data = await homeApi.keySearchPosition(params);
       if (data.code === "200") {
         if (data.content.listx.length === 0) {
-          Toast.fail('搜索数据为空')
+          Toast.fail('搜索结果不理想哦，赶快完善一下简历，获取更多推荐！！！')
         } else {
           that.positions = data.content.listx;
           that.total = data.content.total;

@@ -31,8 +31,8 @@
             </div>
           </van-col>
           <van-col span="14">
-            <p class="company-name">李世民</p>
-            <p class="postion-name">人事经理</p>
+            <p class="company-name">{{userBaseInfo.nickName || '我的名字'}}</p>
+            <!-- <p class="postion-name">我的职位</p> -->
           </van-col>
           <van-col span="2">
             <span class="right-icon">
@@ -317,7 +317,7 @@ export default {
       if (data.code === '200') {
         this.userBaseInfo = data.content
         this.userBaseInfo.profilePicture ? this.userHead = `${BASE_URL}${this.userBaseInfo.profilePicture}` : 
-        this.userHead = require("common/image/personal/user-head.png")
+        this.userHead = require("common/image/home/default-avatar.jpeg")
       }
     }
   },
@@ -426,5 +426,5 @@ export default {
   opacity 0
 
 .company-name, .postion-name
-  padding-top 10px
+  padding-top 20px
 </style>

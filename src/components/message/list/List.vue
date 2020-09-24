@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="all-message">
         <van-tabs v-model="activeName">
             <van-tab title="投递信息" name="sendMsg">
                 <div class="message-list" v-if="messages.length > 0">

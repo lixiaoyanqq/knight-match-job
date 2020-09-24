@@ -6,13 +6,13 @@
         <van-pull-refresh v-show="userInfo.userType === '0'" v-model="refreshing" @refresh="onRefresh">
             <van-list v-model="loading" :immediate-check="false" :finished="finished" finished-text="没有更多了" @load="onLoad">
                 <div id="position-content">
-                    <div class="card-box" v-for="(cont, index) in resumeCards" :key="index">
+                    <div class="card-box" @click.prevent="selectPos(cont.id)" v-for="(cont, index) in resumeCards" :key="index">
                         <div class="card-content">
                             <van-row>
                                 <van-col span="12">
                                     <h1 class="card-left-up">
-                                        <span @click="selectPos(cont.id)">{{cont.postName.length > 6 ? cont.postName.substring(0,6)+'...' : cont.postName}}</span>
-                                        <van-icon @click="onLikePos(cont)" color="#ff5a8c" size="22" :name="cont.isLike === '1' ? 'like' : 'like-o'" />
+                                        <span>{{cont.postName.length > 6 ? cont.postName.substring(0,6)+'...' : cont.postName}}</span>
+                                        <van-icon @click.stop="onLikePos(cont)" color="#ff5a8c" size="22" :name="cont.isLike === '1' ? 'like' : 'like-o'" />
                                     </h1>
                                     <h2 class="card-left-down">{{cont.postSalary}}<span>k/月</span> </h2>
                                 </van-col>
@@ -47,7 +47,7 @@
         <van-pull-refresh v-show="userInfo.userType === '1'" v-model="refreshing" @refresh="onRefresh">
             <van-list v-model="loading" :immediate-check="false" :finished="finished" finished-text="没有更多了" @load="onLoad">
                 <div id="resume-content">
-                    <div class="card-box" v-for="item in tempRecm" :key="item.cvId">
+                    <div class="card-box" @click="onLikeResumeDetail(item)" v-for="item in tempRecm" :key="item.cvId">
                         <div class="card-content">
                             <h1 class="objective-tit">
                                 <van-row>
@@ -66,7 +66,7 @@
                                 </van-col>
                                 <van-col span="16">
                                     <p class="applicant">
-                                        <span class="applicant-name" @click="onLikeResumeDetail(item)">{{item.name || '-'}}</span>
+                                        <span class="applicant-name">{{item.name || '-'}}</span>
                                         <span class="applicant-icon"><van-icon :name="sexIcon" color="#07c160" />{{item.gender || '-'}}</span>
                                         <span class="applicant-icon"><van-icon :name="exopIcon" color="#07c160" />{{item.degree || '-'}}</span>
                                         <span class="applicant-icon"><van-icon :name="posiIcon" color="#07c160" />{{item.expectCitys || '-'}}</span>
@@ -76,8 +76,8 @@
                                         <span class="applicant-rate">（推荐指数）</span>
                                     </p>
                                     <p class="applicant">
-                                        <van-tag color="#eff1fb" size="large">{{item.schoolName || '-'}}</van-tag>
-                                        <van-tag color="#eff1fb" size="large">{{item.major || '-'}}</van-tag>
+                                        <van-tag color="#eff1fb" size="large">{{item.schoolName.length > 6 ?  item.schoolName.substring(0,6)+'...' : item.schoolName || '-'}}</van-tag>
+                                        <van-tag color="#eff1fb" size="large">{{item.major.length > 6 ? item.major.substring(0,6)+'...' : item.major || '-'}}</van-tag>
                                     </p>
                                 </van-col>
                             </van-row>
@@ -239,8 +239,10 @@ export default {
             let data = await userApi.isLike(params)
             if (data.code === '200') {
                 Toast.success('操作成功')
+                this.pageNum = '2'
+                this.pageSize = '5'
+                this.getCards()
             }
-            this.fetchCards()
         },
         async init(){
             let data = await homeApi.applicantList()
@@ -313,6 +315,8 @@ export default {
     color $color-text-b
     line-height 40px
 .card-content .card-left-up .van-icon
+    position relative
+    top 5px
     padding-left 5px
     font-size 18px
 .card-content .card-left-down 

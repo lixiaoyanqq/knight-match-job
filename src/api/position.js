@@ -25,6 +25,14 @@ export function commList(data){
     })
 }
 
+export function otherCommList (data) {
+    return fetch({
+        url: 'amj/search/post/recomByPost',
+        method: 'post',
+        data: data
+    })
+}
+
 export function favoPosts (){
     return fetch({
         url: 'amj/inter/favo/listFavPost',

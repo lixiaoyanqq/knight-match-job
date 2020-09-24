@@ -6,7 +6,11 @@
             :border='false'
             @click-left="onClickLeft"
             left-arrow
-            style="height:2.5rem" />
+            style="height:4rem" >
+            <template #left>
+                <van-icon :name="leftIcon" size="20" />
+            </template>
+        </van-nav-bar>
         <section class="desc-swipe">
             <van-swipe class="my-swipe" :width="'100%'" :height="200" :autoplay="3000" indicator-color="white">
                 <van-swipe-item v-for="(image, index) in images" :key="index">
@@ -107,11 +111,11 @@
                 <van-row>
                     <van-col span="6">
                         <div class="comment-pic">
-                            <van-image :src="comment.otherPic" /> 
+                            <van-image :src="comment.userHeadPic ? comment.userHeadImg : defaultAvatar" /> 
                         </div>
                     </van-col>
                     <van-col span="18">
-                        <h2>{{comment.userName}}</h2>
+                        <h2>{{comment.userName || '游客评论'}}</h2>
                         <p class="comment-rate">
                             <span>星级</span>
                             <van-rate v-model="comment.startsNum" allow-half :size="16" color="#ff5a8c" void-icon="star" />
@@ -129,18 +133,24 @@
             <div class="recommend-card" v-for="(recommment, index) in otherRecommends" :key="index">
                 <van-row>
                     <van-col span="10">
-                        <van-image :src="recommment.recommentImg" />
+                        <van-image :src="recommment.entpLogo || defaultAvatar" />
                     </van-col>
                     <van-col span="14">
-                        <h2>
-                            <span>{{recommment.pos}}</span><span>|</span><span>{{recommment.comm}}</span>
+                        <h2 @click="onPosDetail(recommment.id)">
+                            <span>{{recommment.postName}}</span>
                         </h2>
-                        <p>
-                            <span>{{recommment.address}}</span><span>|</span><span>{{recommment.area}}</span><span>|</span><span>{{recommment.requir}}</span><span>|</span><span>{{recommment.othen}}</span>
+                        <p class="view-value">
+                            <span>{{recommment.entpName}}</span>
                         </p>
-                        <h3>
+                        <p class="view-value">
+                            <span>{{recommment.city}}</span>
+                        </p>
+                        <p>
+                            <span>|</span><span>{{recommment.postSalary}}</span><span>|</span><span>{{recommment.postNature}}</span><span>|</span><span>{{recommment.postEdu}}</span>
+                        </p>
+                        <!-- <h3>
                             <van-rate v-model="recommment.rate" :size="16" color="#ff5a8c" allow-half void-icon="star" />
-                        </h3>
+                        </h3> -->
                     </van-col>
                 </van-row>
             </div>
@@ -156,9 +166,12 @@ import { Toast } from 'vant'
 import { getLocalStore } from 'utils/global'
 import { BASE_URL } from 'api/config'
 export default {
+    inject: ['reload'],
     data () {
         return {
+            leftIcon: require("common/image/home/lefticon.png"),
             baseInfo: JSON.parse(getLocalStore('baseInfo')),
+            defaultAvatar: require("common/image/home/default-avatar.jpeg"),
             loading: false,
             title: '职位详情',
             id: this.$route.query.id,
@@ -182,38 +195,7 @@ export default {
                 { name:'互联网', color: '#f9e6c2'}
             ],
             comments: [],
-            otherRecommends: [
-                {
-                    recommentImg: require('common/image/position/pos-list-1.png'),
-                    pos: '前端',
-                    comm: '椅子网',
-                    address: '上海',
-                    area: '莆田区',
-                    requir: '三年',
-                    other: '五',
-                    rate: 5
-                },
-                {
-                    recommentImg: require('common/image/position/pos-list-2.png'),
-                    pos: '前端',
-                    comm: '椅子网',
-                    address: '上海',
-                    area: '莆田区',
-                    requir: '三年',
-                    other: '五',
-                    rate: 4
-                },
-                {
-                    recommentImg: require('common/image/position/pos-list-3.png'),
-                    pos: '前端',
-                    comm: '椅子网',
-                    address: '上海',
-                    area: '莆田区',
-                    requir: '三年',
-                    other: '五',
-                    rate: 3
-                }
-            ]
+            otherRecommends: []
         }
     },
     methods: {
@@ -225,6 +207,7 @@ export default {
                 this.getPosDetail()
                 this.getCommList()
                 this.getMyPic()
+                this.getOtherRecomments()
             }
         },
         getMyPic () {
@@ -245,11 +228,24 @@ export default {
             }
             posApi.commList(commParams)
                 .then( data =>{
-                    if(data.code === '200'){
+                    if(data && data.code === '200' && data.content){
                         // console.log('data',data)
-                        this.comments = data.content.listx
+                        this.comments = data.content.listx.map(item => {
+                            return {...item, userHeadImg: `${BASE_URL}${item.userHeadPic}`}
+                        })
+                        console.log('this.comments',this.comments)
                     }
                 })
+        },
+        async getOtherRecomments () {
+            let prams = { pageNum: '1', pageSize: '3', postId: this.id}
+            let data = await posApi.otherCommList(prams)
+            if (data && data.code === '200' && data.content) {
+                this.otherRecommends = data.content.listx.map( item => {
+                    return {...item, companyLogo: `${BASE_URL}${item.entpLogo}`}
+                })
+                console.log('this.otherRecommends',this.otherRecommends)
+            }
         },
         formatFetchDetail(fetchDate){
             this.allData = fetchDate.content
@@ -272,6 +268,9 @@ export default {
         },
         contactCompany(){
 
+        },
+        onPosDetail(id){
+            this.$router.push({name: 'posDetail', query: {id: id}})
         },
         async onFover(val){
             // console.log('val',val)
@@ -316,6 +315,11 @@ export default {
     },
     mounted () {
         this.init()
+    },
+    watch: {
+        $route (to) {
+            this.reload()
+        }
     }
 }
 </script>
@@ -333,7 +337,7 @@ export default {
     background $color-background
     overflow-y scroll
 .desc-swipe
-    margin-top 2.5rem
+    margin-top 4rem
 .pos-pic
     width 80%
     height 90%
@@ -401,11 +405,17 @@ export default {
 .all-rate span 
     color #ff5a8c
     font-size 24px
-.my-comments .my-pic, .comments-list .comment-pic
-    width 80%
-    height 60px
+.my-comments .my-pic
+    width 80px
+    height 80px
     margin 3px auto
-    border-radius 25px
+    border-radius 50%
+    overflow hidden
+.comments-list .comment-pic
+    width 80px
+    height 80px
+    margin 3px auto
+    border-radius 50%
     overflow hidden
 .my-comments h2, .comments-list h2
     line-height 24px
@@ -443,13 +453,13 @@ export default {
     color #4e6a75
 .recommend-card
     width 100% 
-    height 100px
+    height 120px
     background #ffffff
     border-radius 10px
     margin 10px auto
 .recommend-card .van-image
     width 120px 
-    height 80px
+    height 100px
     border-radius 10px
     overflow hidden
     margin 10px
@@ -466,4 +476,10 @@ export default {
     padding-right 4px
 .recommend-card h3 
     padding-top 10px
+.view-value
+  display -webkit-box
+  overflow hidden
+  -webkit-line-clamp 1
+  text-overflow ellipsis
+  -webkit-box-orient vertical
 </style>

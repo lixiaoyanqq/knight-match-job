@@ -223,6 +223,7 @@ export default {
             if (this.isForget) {
                 console.log('忘记密码')
                 let data = await userApi.forgetPassword(this.registerForm)
+                console.log('data',data)
                 if (data.code === '200') {
                     Toast.success('重置密码成功，请直接登录')
                     this.active = 0
@@ -232,40 +233,59 @@ export default {
                     this.loginForm.password = this.registerForm.newPassword
                     this.$refs.registerForm.resetValidation()
                     this.resetForm()
+                } else if (data.code === '0005') {
+                    Toast.fail('验证码过期或无效，请重新获取验证码！！！')
                 }
             }
             
             if (this.isRegister) {
-                try {
-                    let data = await this.register(this.registerForm)
-                    // console.log('data',data)
-                    if(data.code === '200') {
-                        Toast.success('注册成功，请直接登录')
-                        this.active = 0
-                        this.loginForm.mobile = this.registerForm.mobile
-                        this.loginForm.password = this.registerForm.password
-                        this.$refs.registerForm.resetValidation()
-                    } else if (data.code === '0002') {
-                        Toast('该账号已注册，请直接登录')
-                        this.active = 0
-                        this.$refs.registerForm.resetValidation()
-                        this.resetForm()
-                    } else {
-                        Toast.fail('注册失败，请重新注册')
-                        this.$refs.registerForm.resetValidation()
-                        this.resetForm()
-                    }
-                
-                } catch (error) {
-                    // console.log('error',error)
-                    Toast({
-                        message: '注册失败，或该手机号已经注册，请直接登录',
-                        duration: 3000
-                    })
+                let data = await this.register(this.registerForm)
+                console.log('data',data)
+                if (data && data.code === '200') {
+                    Toast.success('注册成功，请直接登录')
+                    this.$refs.registerForm.resetValidation()
+                    this.resetForm()
                     this.active = 0
+                } else if (data && data.code ==='0002') {
+                    Toast('该账号已注册，请直接登录')
+                    this.$refs.registerForm.resetValidation()
+                    this.resetForm()
+                    this.active = 0
+                } else if (data && data.code === '0005') {
+                    Toast('验证码过期或无效验证码')
                     this.$refs.registerForm.resetValidation()
                     this.resetForm()
                 }
+                // try {
+                    // let data = await this.register(this.registerForm)
+                    // console.log('data',data)
+                    // if(data.code === '200') {
+                    //     Toast.success('注册成功，请直接登录')
+                    //     this.active = 0
+                    //     this.loginForm.mobile = this.registerForm.mobile
+                    //     this.loginForm.password = this.registerForm.password
+                    //     this.$refs.registerForm.resetValidation()
+                    // } else if (data.code === '0002') {
+                    //     Toast('该账号已注册，请直接登录')
+                    //     this.active = 0
+                    //     this.$refs.registerForm.resetValidation()
+                    //     this.resetForm()
+                    // } else {
+                    //     Toast.fail('注册失败，请重新注册')
+                    //     this.$refs.registerForm.resetValidation()
+                    //     this.resetForm()
+                    // }
+                
+                // } catch (error) {
+                    // console.log('error',error)
+                    // Toast({
+                    //     message: '注册失败，或该手机号已经注册，请直接登录',
+                    //     duration: 3000
+                    // })
+                    // this.active = 0
+                    // this.$refs.registerForm.resetValidation()
+                    // this.resetForm()
+                // }
             }
         },
         onBlue(){
@@ -303,11 +323,13 @@ export default {
                 this.resetForm()
             } else if (this.active === 1 && this.isForget === false) {
                 this.isRegister = true
+                this.registerForm.mobile = this.loginForm.mobile
             }
         },
         onForgetPassword () {
             this.isForget = true
             this.active = 1
+            this.registerForm.mobile = this.loginForm.mobile
         },
         resetForm () {
             this.isForget = false
@@ -359,7 +381,8 @@ export default {
     height 28px
 .forgot-password
     color red
-    padding-top 18px
+    padding-top 28px
     display inline-block
     font-size 12px
+    z-index 9
 </style>

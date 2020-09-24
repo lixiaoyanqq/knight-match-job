@@ -182,3 +182,30 @@ export function acceptInterview (id) {
         }
     })
 }
+
+//喜欢的数量和状态
+export function likeNumber (data) {
+    return fetch({
+        url: 'amj/inter/like/getCountAndStatus',
+        method: 'post',
+        data: data
+    })
+}
+
+//收藏的数量和状态
+export function collectionNumber(data) {
+    return fetch({
+        url: 'amj/inter/favo/getCountAndStatus',
+        method: 'post',
+        data: data
+    })
+}
+
+//评论的数量
+export function commentsNumber(data) {
+    return fetch({
+        url: 'amj/inter/comm/getCount',
+        method: 'post',
+        data: data
+    })
+}

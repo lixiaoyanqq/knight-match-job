@@ -15,7 +15,7 @@
             left-icon
             :right-icon="searchIcon"
             @focus="onFocus"
-            placeholder="搜索感谢兴趣的职位/公司"
+            :placeholder="userInfo.userType === '0' ? '搜索感谢兴趣的职位/公司' : '搜索感兴趣的人才'"
           ></van-search>
         </form>
       </van-col>

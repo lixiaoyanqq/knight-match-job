@@ -188,7 +188,7 @@ export default {
         let data = await homeApi.keySearchResume(params);
         if (data.code === "200") {
           if (data.content.listx.length === 0) {
-            Toast.fail('搜索数据为空')
+            Toast.fail('搜索结果不理想哦，可以换个关键字试试哦')
           } else {
             that.resumes = data.content.listx
             that.total = data.content.total

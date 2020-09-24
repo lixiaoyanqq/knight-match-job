@@ -58,6 +58,14 @@ export default {
             chart: null
         }
     },
+    watch: {
+        typeNames (nameList) {
+            this.initChart()
+        },
+        typeValue (valueList) {
+           this.initChart() 
+        }
+    },
     mounted () {
         this.initChart()
     },
@@ -113,7 +121,7 @@ export default {
                 xAxis: [
                     {
                         type: 'category',
-                        data: this.typeNames,
+                        data: this.typeNames || ["项目经历", "潜力", "求职目标", "教育", "工作经历", "基本信息"],
                         axisLine: {
                             show: false
                         },
@@ -151,7 +159,7 @@ export default {
                         type: 'bar',
                         barWidth: 5,
                         stack: '广告',
-                        data: this.typeValue.number,
+                        data: this.typeValue.postNum || this.typeValue.number,
                         itemStyle:{
                             color: '#283ac8',
                             barBorderRadius: [3,3,3,3],
@@ -166,7 +174,7 @@ export default {
                         type: 'bar',
                         barWidth: 5,
                         stack: '广告',
-                        data: this.typeValue.rate,
+                        data: this.typeValue.deliverNum || this.typeValue.rate,
                         itemStyle:{
                             color: '#f61e67',
                             barBorderRadius: [3,3,3,3]

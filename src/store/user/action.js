@@ -11,6 +11,8 @@ export default {
     async [type.REGISTER] (context, playload = {}) {
         let data = await user.register(playload)
         console.log('data',data)
+        context.commit(type.REGISTER, data)
+        return data
         // context.commit(type.SET_TOKEN, data.content.token)
         // context.commit(type.SET_BADE_INFO, data.content.baseInfo)
     },

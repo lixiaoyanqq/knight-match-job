@@ -87,6 +87,23 @@ export default {
                 let data = await homeApi.postList()
                 if (data.code === '200') {
                     this.recommentPosts = data.content.listx
+                } else {
+                   this.recommentPosts =  [
+                        { "id":"5b472224846c2e46158d4521","name":"产品经理" },
+                        { "id":"5b4721f1846c2e37668d594b","name":"算法工程师" },
+                        {"id":"5b5eb6c3c3c44276578b93f3","name":"编辑" },
+                        { "id":"5b8cd49ddc92d0a5468bf95f","name":"老师" },
+                        { "id":"5b472145846c2e1c498bead6","name":"web前端工程师" },
+                        { "id":"5b67be95846c2ed9478d3872","name":"Java工程师" },
+                        { "id":"5b472122846c2e1c498be9bb","name":"技术总监" },
+                        { "id":"5b4722d7846c2e206b8d660d","name":"HR" },
+                        { "id":"5b472209846c2e4b6a8d722f","name":"UI设计" },
+                        { "id":"5b472230846c2eaa758d5d6d","name":"AI设计" },
+                        { "id":"5b47218e846c2ef7408be742","name":"工程师" },
+                        { "id":"5b4720fa846c2eb4428ce996","name":"Go工程师" },
+                        { "id":"5b46f993c3c442a6338d53ce","name":"销售顾问" },
+                        { "id":"5b5eadccc5702ece0d8ba38a","name":"IOS工程师" }
+                    ]
                 }
             }
             this.$nextTick(() => {
@@ -205,7 +222,8 @@ export default {
     border-radius 8rem
     background linear-gradient(to right, #2739c8, #f51e67)
 .menuAll
-    display inline-block
+    // display inline-block
+    display none
     position relative
     top 0
     right 1px

@@ -5,7 +5,11 @@
                  :border='false'
                  @click-left="onClickLeft"
                  left-arrow
-                 style="height:2.5rem" />
+                 style="height:4rem">
+            <template #left>
+                <van-icon :name="leftIcon" size="20" />
+            </template>
+        </van-nav-bar>
         <van-form @submit="onSubmit" v-model="invitForm" ref="invitForm" label-width="100">
             <van-cell-group class="base-info-group">
                 <label>邀请人</label>
@@ -98,6 +102,7 @@ export default {
         return {
             id: this.$route.query.id,
             recruitId: this.$route.query.recruitId,
+            leftIcon: require("common/image/home/lefticon.png"),
             iviewTime: '',
             invitePost: '',
             invitePostId: '',

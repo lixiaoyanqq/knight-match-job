@@ -7,10 +7,10 @@
 
     <!-- <van-sticky class="sider-sticky" :offset-top="350"> -->
       <section class="sider-nav">
-         <van-button :icon="likeIcon" @click="onLike" type="default" />
-         <van-button :icon="remarkIcon" @click="onLiveMsg" type="default" />
-         <van-button :icon="shareIcon" @click="onTransmit" type="default" />
-         <van-button :icon="starIcon" @click="onCollect" type="default" />
+         <van-icon :name="likeIcon" :badge="likeNum"  @click="onLike" />
+         <van-icon :name="remarkIcon" :badge="commentsNum" @click="onLiveMsg" />
+         <van-icon :name="shareIcon" @click="onTransmit" />
+         <van-icon :name="starIcon" :badge="connectionNum" @click="onCollect" />
       </section>
     <!-- </van-sticky> -->
     <dashboard/>
@@ -83,6 +83,9 @@ export default {
       showShare: false,
       isLisk: false,
       isCollection: false,
+      likeNum: '',
+      connectionNum: '',
+      commentsNum: '',
       starIcon: require('common/image/home/hollow-collection.png'),
       likeIcon: require('common/image/home/hollow-heart.png'),
       backMessage: '',
@@ -104,19 +107,18 @@ export default {
     };
   },
   methods: {
-    onLike(){
-      userApi.isLike(this.prms).then( data =>{
-        if(data && data.content && data.content.recordStatus){
-          if(data.content.recordStatus === '0'){
-            this.isLisk = true
-            this.likeIcon = require('common/image/home/solid-heart.png')
-          } else if (data.content.recordStatus === '1') {
-            this.isLisk = false
-            this.likeIcon = require('common/image/home/hollow-heart.png')
-          }
+    async onLike(){
+      let data = await userApi.isLike(this.prms)
+      if(data && data.content && data.content.recordStatus){
+        if(data.content.recordStatus === '0'){
+          this.isLisk = false
+          this.likeIcon = require('common/image/home/hollow-heart.png')
+        } else if (data.content.recordStatus === '1') {
+          this.isLisk = true
+          this.likeIcon = require('common/image/home/solid-heart.png')
         }
-        console.log('like', this.isLisk)
-      })
+      }
+      this.getLikeNumber()
     },
     onLiveMsg(){
       this.feedback = true
@@ -153,26 +155,65 @@ export default {
     onCancelShare(){
       this.shareIcon = require('common/image/home/hollow-share.png')
     },
-    onCollect(){
+    async onCollect(){
       let obj = {
         resId: '1',
-        resType: 0,
+        resType: '3',
       }
-      userApi.isCollect(obj).then(data => {
-        console.log('data',data)
-        if(data && data.content && data.content.recordStatus){
-          if(data.content.recordStatus === '0'){
-            this.isCollection = true
-            this.starIcon = require('common/image/home/solid-collection.png')
-          }else if (data.content.recordStatus === '1') {
-            this.isCollection = false
-            this.starIcon = require('common/image/home/hollow-collection.png')
-          }
+      let data = await userApi.isCollect(obj)
+      if(data && data.content && data.content.recordStatus){
+        if(data.content.recordStatus === '0'){
+          this.isCollection = false
+          this.starIcon = require('common/image/home/hollow-collection.png')
+        }else if (data.content.recordStatus === '1') {
+          this.isCollection = true
+          this.starIcon = require('common/image/home/solid-collection.png')
         }
-      })
+      }
+      this.getCollectionNumber()
+    },
+    async getLikeNumber() {
+      let params = {resId: '1', resType: '3'}
+      let data = await userApi.likeNumber(params)
+      if (data && data.code === '200' && data.content) {
+        this.likeNum = data.content.allnum
+        if(data.content.recordStatus === '0'){
+            this.isLisk = false
+            this.likeIcon = require('common/image/home/hollow-heart.png')
+          } else if (data.content.recordStatus === '1') {
+            this.isLisk = true
+            this.likeIcon = require('common/image/home/solid-heart.png')
+          }
+      }
+    },
+    async getCollectionNumber () {
+      let params = {resId: '1', resType: '3'}
+      let data = await userApi.collectionNumber(params)
+      if(data && data.code === '200' && data.content) {
+        this.connectionNum = data.content.allnum
+        if(data.content.recordStatus === '0'){
+          this.isCollection = true
+          this.starIcon = require('common/image/home/hollow-collection.png')
+        }else if (data.content.recordStatus === '1') {
+          this.isCollection = false
+          this.starIcon = require('common/image/home/solid-collection.png')
+        }
+      }
+
+    },
+    async getCommentsNumber () {
+      let params = {resId: '1', resType: '3'}
+      let data = await userApi.commentsNumber(params)
+      if (data && data.code === '200' && data.content) {
+        this.commentsNum = data.content.allnum
+      }
+
     }
   },
   mounted() {
+    this.getLikeNumber()
+    this.getCollectionNumber()
+    this.getCommentsNumber()
   }
 };
 </script>
@@ -193,6 +234,7 @@ export default {
 .sider-nav .van-icon
   color #ff5a8c
   font-size 28px
+  padding 5px 5px
 .sider-nav .van-button
   background none
   border none

@@ -5,7 +5,11 @@
             :border='false'
             @click-left="onClickLeft"
             left-arrow
-            style="height:2.5rem" />
+            style="height:4rem" >
+            <template #left>
+                <van-icon :name="leftIcon" size="20" />
+            </template>
+        </van-nav-bar>
         <section class="pos-manage-list">
             <div class="manage-header">
                 <van-row>
@@ -45,7 +49,9 @@ import { mapState, mapActions } from 'vuex'
 import { Toast, Dialog } from 'vant'
 export default {
     data () {
-        return {}
+        return {
+            leftIcon: require("common/image/home/lefticon.png"),
+        }
     },
     computed: {
         ...mapState({
@@ -105,7 +111,7 @@ export default {
     z-index: 999;
     overflow-y scroll
 .pos-manage-list
-    margin-top 3rem
+    margin-top 4rem
 .manage-header
     height 40px
     line-height 40px

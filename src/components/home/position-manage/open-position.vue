@@ -5,12 +5,27 @@
             :border='false'
             @click-left="onClickLeft"
             left-arrow
-            style="height:2.5rem" />
+            style="height:4rem">
+            <template #left>
+                <van-icon :name="leftIcon" size="20" />
+            </template>
+        </van-nav-bar>
         <section class="open-form">
             <van-form @submit="onOpen" v-model="openForm" ref="openForm">
                 <van-cell-group>
                     <label>职位名称</label>
                     <van-field v-model="openForm.postName" name="postName" placeholder="职位名称" />
+                </van-cell-group>
+                <van-cell-group>
+                    <label>岗位类型</label>
+                    <van-field
+                        v-model="postType"
+                        readonly
+                        clickable
+                        name="postType"
+                        :value="postType"
+                        placeholder="岗位类型"
+                        @click="onShowPicker('postType')"/>
                 </van-cell-group>
                 <van-cell-group>
                     <label>职位性质</label>
@@ -107,11 +122,13 @@ import { Notify, Toast } from 'vant'
 export default {
     data () {
         return {
+            leftIcon: require("common/image/home/lefticon.png"),
             showPicker: false,
             openForm: this._.merge({}, homeUtils.BASE_OPEN_FORM),
             id: this.$route.query.id || null,
             pickerName: '',
             postWorktype: '',
+            postType: '',
             reqJobExp: '',
             reqAcademic: '',
             postSalary: '',
@@ -119,7 +136,8 @@ export default {
             postWorktypes: ['全职', '兼职', '实习'],
             reqJobExps: ['应届生', '1-3年', '3-5年', '5-10年', '10-15年', '15-20年', '20年以上'],
             reqAcademics: ['博士','硕士','本科','大专'],
-            postSalares: ['2k-5k','6k-10k','11k-15k', '16k-20k','21k-30k','30k-40k','50k-70k']
+            postSalares: ['2k-5k','6k-10k','11k-15k', '16k-20k','21k-30k','30k-40k','50k-70k'],
+            postTypes: ['技术岗','科研岗','市场岗','设计岗','销售岗','培训岗','运营岗','其他']
         }
     },
     methods: {
@@ -138,6 +156,9 @@ export default {
                     break;
                 case 'reqAcademic':
                     this.columns = this.reqAcademics
+                    break;
+                case 'postType':
+                    this.columns = this.postTypes
                     break;
                 case 'postSalary':
                     this.columns = this.postSalares
@@ -188,6 +209,7 @@ export default {
                 let data = await homeApi.onePost(this.id)
                 this.openForm = this._.merge({}, data.content)
                 this.postWorktype = data.content.postWorktype
+                this.postType = data.content.postType
                 this.reqJobExp = data.content.reqJobExp
                 this.reqAcademic = data.content.reqAcademic
                 this.postSalary = data.content.postSalary
