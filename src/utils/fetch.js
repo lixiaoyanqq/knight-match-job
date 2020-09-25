@@ -21,13 +21,16 @@ service.interceptors.request.use(
         return config
     },
     arror => {
+
         Promise.reject(arror)
     }
 )
 
 // respone拦截器
 service.interceptors.response.use(
-    response => response.data || response.content,
+    response => {
+        return response.data || response.content
+    },
     error => {
         console.log('err' + error)
         // console.log('error',error.response)
@@ -35,7 +38,7 @@ service.interceptors.response.use(
             type: 'warning',
             message: error.response && error.response.data && error.response.data.message || error.message
         })
-        if(error.response.code === '0004'){
+        if(error.response.content.code === '0004'){
             store.dispatch(type.LOGOUT)
             location.reload()
         }

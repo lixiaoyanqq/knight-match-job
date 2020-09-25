@@ -15,27 +15,18 @@
                 职位
             </h1> -->
             <div v-if="views.length > 0">
-                <div class="view-card">
+                <div class="view-card" v-for="item in views" :key="item.id">
                     <van-row>
                         <van-col span="8">
                             <van-image
-                                width=""
-                                height=""
-                                src="https://img.yzcdn.cn/vant/cat.jpeg"/>
+                                width="100"
+                                height="80"
+                                :src="baseInfo.userType === '0' ? item.entpImg : item.avatar"/>
                         </van-col>
-                        <van-col span="12">
-                            <h1>张俊梅</h1>
-                            <p>
-                                <span>北京</span>
-                                <span>|</span>
-                                <span>本科</span>
-                                <span>|</span>
-                                <span>应届生</span>
-                            </p>
-                        </van-col>
-                        <van-col span="4">
-                            <h2>12-14k</h2>
-                            <h3>未处理</h3>
+                        <van-col span="16">
+                            <h1 class="view-value" @click="onDetail(item)">{{baseInfo.userType === '0' ? item.entpName : item.userName}}</h1>
+                            <h1>{{baseInfo.userType === '0' ? '投递职位' : '应聘岗位'}}：{{baseInfo.userType === '0' ? item.postName : item.postName}}</h1>
+                            <h1>{{item.createTime}}</h1>
                         </van-col>
                     </van-row>
                 </div>
@@ -48,6 +39,7 @@
 import { getLocalStore } from 'utils/global'
 import * as userApi from 'api/user'
 import * as compApi from 'api/company'
+import { BASE_URL } from 'api/config'
 export default {
     data () {
         return {
@@ -61,6 +53,15 @@ export default {
         onClickLeft(){
             this.$router.back()
         },
+        onDetail (item) {
+            if (this.baseInfo.userType === '0') {
+                this.$router.push({name: 'posDetail', query: {id: item.postId}})
+            }
+            if (this.baseInfo.userType === '1') {
+                this.$router.push({name: 'likeResumeDetail', query: {id: item.userId, recruitId:item.id}})
+            }
+            
+        },
         async init(){
             if (this.baseInfo.userType === '0') {
                 // console.log('个人--')
@@ -68,6 +69,9 @@ export default {
                     let data = await userApi.listTalRecruit(this.recruitStatus)
                     if(data && data.content && data.content.listx) {
                         this.views = data.content.listx
+                        this.views = data.content.listx.map( item => {
+                            return {...item, avatar: `${BASE_URL}${item.userHeadPic}`, entpImg: item.entpLogo ? `${BASE_URL}${item.entpLogo}` : null}
+                        })
                         // this.deloveries = JSON.parse(JSON.stringify(data.content.listx))
                         console.log('this.views',this.views)
                     }
@@ -78,6 +82,9 @@ export default {
                     let data = await compApi.checkRecruit(this.recruitStatus)
                     if(data && data.content && data.content.listx) {
                         this.views = data.content.listx
+                        this.views = data.content.listx.map( item => {
+                            return {...item, avatar: `${BASE_URL}${item.userHeadPic}`, entpImg: item.entpLogo ? `${BASE_URL}${item.entpLogo}` : null}
+                        })
                         // this.deloveries = JSON.parse(JSON.stringify(data.content.listx))
                         console.log('this.views',this.views)
                     }
@@ -101,9 +108,8 @@ export default {
     z-index: 999;
     overflow-y scroll
 .view-list
-    margin-top 4rem
     width 90%
-    margin 3rem auto
+    margin 5rem auto 0
     color #000000
 .view-list .view-tit
     height 30px
@@ -120,8 +126,8 @@ export default {
 .view-card p,
 .view-card h2,
 .view-card h3 
-    height 36px
-    line-height 36px
+    height 28px
+    line-height 28px
     font-size 14px
 .view-card h1,
 .view-card p

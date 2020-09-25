@@ -234,7 +234,7 @@ export default {
                     this.$refs.registerForm.resetValidation()
                     this.resetForm()
                 } else if (data.code === '0005') {
-                    Toast.fail('验证码过期或无效，请重新获取验证码！！！')
+                    Toast.fail('验证码过期或无效验证码')
                 }
             }
             
@@ -253,8 +253,10 @@ export default {
                     this.active = 0
                 } else if (data && data.code === '0005') {
                     Toast('验证码过期或无效验证码')
+                    this.active = 1
+                    this.isRegister = true
                     this.$refs.registerForm.resetValidation()
-                    this.resetForm()
+                    // this.resetForm()
                 }
                 // try {
                     // let data = await this.register(this.registerForm)
@@ -296,23 +298,27 @@ export default {
             // console.log('this.validCodeUrl',this.validCodeUrl)
             this.$set(captchaEle, 'src', `${this.validCodeUrl}&time=` + new Date());
         },
-        sentMessage(){
+        async sentMessage(){
             const obj = {
                 mobile: this.registerForm.mobile,
                 validCode: this.registerForm.validCode,
                 codeType: this.getCode()
             }
-            this.countDown = 60;
-            this.timeIntervalID = setInterval(() => {
-                this.countDown--;
-                // 4.1 如果减到0 则清除定时器
-                if (this.countDown == 0) {
-                clearInterval(this.timeIntervalID);
-                }
-            }, 1000)
-            userApi.sentMsg(obj).then(data =>{
-                // console.log('data',data)
-            })
+            let data = await userApi.sentMsg(obj)
+            if (data.code === '200') {
+                Toast.success('验证码发送成功')
+                this.countDown = 60;
+                this.timeIntervalID = setInterval(() => {
+                    this.countDown--;
+                    // 4.1 如果减到0 则清除定时器
+                    if (this.countDown == 0) {
+                    clearInterval(this.timeIntervalID);
+                    }
+                }, 1000)
+            } else if (data.code === '0006') {
+                Toast.fail('图形验证码错误')
+            }
+            
         },
         getCode () {
             return this.isForget ? '1' : '0'

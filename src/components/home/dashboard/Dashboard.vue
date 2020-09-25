@@ -161,11 +161,14 @@
 import * as dashboardApi from "api/home"
 import BarEchart from "../echarts/Bar"
 import * as homeUtil from "components/home/services/home"
+import * as userApi from 'api/user'
 import * as type from 'store/user/mutations_types'
 import { mapState, mapActions, mapMutations } from 'vuex'
 import { getLocalStore } from 'utils/global'
 import * as compApi from 'api/company'
 import { setLocalStore } from "utils/global";
+import { Dialog } from 'vant'
+import * as userType from 'store/user/mutations_types'
 export default {
   inject: ['reload'],
   components: {
@@ -183,12 +186,13 @@ export default {
       typeIcon: require("common/image/home/types.png"),
       myExpect: {},
       cartLoading: false,
+      isLogin: false,
       rate: 50,
       perfection: null,
       entryRate: null,
       enterviewRate: null,
       dashboard: {},
-      resumeTooltip : ['数量', '占比'],
+      resumeTooltip : ['能力评分'],
       compTooltip : ['职位数量', '投递数量'],
       typeNamesItem: [],
       sliderBtn: 50,
@@ -218,15 +222,22 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      logout: userType.LOGOUT
+    }),
     async dashboardData(){
       // console.log('baseInfo',this.baseInfo)
       if(this.baseInfo.userType && this.baseInfo.userType === '0'){
         let data = await dashboardApi.getDashboard()
         if(data && data.content){
           this.dashboard = data.content
-          this.perfection = Number(data.content.perfection)
+          if (data.content.perfection === null) {
+            this.isLogin = false
+          } else {
+            this.isLogin = true
+            this.perfection = Number(data.content.perfection)
+          }
           this.extractResumeTerms()
-          // this.extractResume()
         }
         let expectData = await dashboardApi.getCity()
         if(expectData.code === '200'){
@@ -234,7 +245,7 @@ export default {
         }
       } else if (this.baseInfo.userType && this.baseInfo.userType === '1'){
         let data =  await dashboardApi.getCompDashboard()
-        if(data && data.content){
+        if(data && data.content && data.code === '200'){
           this.dashboard = data.content
           this.enterviewRate = Number(data.content.enterviewRate)
           this.entryRate = Number(data.content.entryRate)
@@ -244,6 +255,10 @@ export default {
             this.compTypeValues.deliverNum.push(item.deliverNum)
             this.compTypeValues.postNum.push(item.postNum)
           })
+        } else if (data.code === '0004') {
+          this.compTypeName = ['技术岗','科研岗','市场岗','设计岗','销售岗','培训岗','运营岗','其他']
+          this.compTypeValues.deliverNum = [0, 0, 0, 0, 0, 0, 0]
+          this.compTypeValues.postNum = [0, 0, 0, 0, 0, 0, 0]
         }
       }
     },
@@ -260,9 +275,24 @@ export default {
       }
     },
     onClickResume(){
-      this.$router.push({
-        name: 'resumeDetail'
-      })
+      if(this.isLogin){
+        this.$router.push({name: 'resumeDetail'})
+      } else {
+        Dialog.confirm({
+            title: '退出提示',
+            message: '登录过期，请先登录',
+            beforeClose: this.beforeClose
+        })
+      }
+    },
+    beforeClose(action, done){
+      if(action === 'confirm'){
+          this.logout()
+          this.$router.push({ name: 'login'})
+          done()
+      } else {
+          done()
+      }
     },
     onClickCompany(){
       this.$router.push({
@@ -279,12 +309,21 @@ export default {
       if(data && data.code === '200') {
         this.conmanyDetail = data.content
       }
+    },
+    async getUserInfo () {
+      let data = await userApi.fetchUserBaseInfo()
+      if(data.code === '200') {
+        this.isLogin = true
+      } else if (data.code === '0004') {
+        this.isLogin = false
+      }
     }
   },
   mounted(){
     this.init()
   },
   created(){
+    this.getUserInfo()
     this.dashboardData()
     this.companyDesc()
   },
@@ -383,4 +422,7 @@ export default {
   font-size 20px
 .dashboard-main .van-notice-bar
   width 80%
+.dashboard-main .van-slider
+  width 80%
+  margin 0 auto
 </style>

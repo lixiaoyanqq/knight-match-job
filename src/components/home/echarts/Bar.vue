@@ -121,7 +121,7 @@ export default {
                 xAxis: [
                     {
                         type: 'category',
-                        data: this.typeNames || ["项目经历", "潜力", "求职目标", "教育", "工作经历", "基本信息"],
+                        data: this.typeNames,
                         axisLine: {
                             show: false
                         },

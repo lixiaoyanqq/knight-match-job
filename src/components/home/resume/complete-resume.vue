@@ -82,7 +82,7 @@ export default {
             datetimePicker: false,
             showPicker: false,
             minDate: new Date(1900, 0, 1),
-            maxDate: new Date(2050, 10, 1),
+            maxDate: new Date(),
             currentDate: new Date(),
             resumeForm: {
                 //个人基本信息

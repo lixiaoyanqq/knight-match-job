@@ -28,7 +28,6 @@
             <van-row>
                 <van-col :span="userInfo.userType === '1' ? '14' : '20'">
                     <h1>{{resemeBaseInfo.actualName || '-'}}</h1>
-                    <p>简历完整度 <span>{{resemeBaseInfo.perfection || '-'}}%</span></p>
                 </van-col>
                 <van-col v-if="isUnFit !== true" :span="userInfo.userType === '1' ? '10' : '4'">
                     <van-button v-if="id && resemeBaseInfo.isUnfit === '0'" class="invite-btn" @click="onNotFit(resemeBaseInfo.userId)" size="mini">
@@ -63,12 +62,12 @@
             </h1>
             <div class="education-list" v-for="(eduexp, index) in resuemEduexps" :key="index">
                 <van-row>
-                    <van-col span="8">
+                    <!-- <van-col span="8">
                         <div class="school-pic">
                             <van-image :src="eduexp.schoolImg || schoolImg"/>
                         </div>
-                    </van-col>
-                    <van-col span="11">
+                    </van-col> -->
+                    <van-col span="24">
                         <h2>{{eduexp.schoolName}}</h2>
                         <p><span>{{eduexp.education}}</span><span>-</span><span>{{eduexp.proName}}</span></p>
                         <p><span>{{eduexp.startTime}}</span><span>-</span><span>{{eduexp.endTime}}</span></p>
@@ -231,7 +230,6 @@ export default {
             } else {
                 this.userHead = require("common/image/home/default-avatar.jpeg")
             }
-            console.log('this.resemeBaseInfo',this.resemeBaseInfo)
             this.resumeExpectDto = data.expectDto
             this.resuemEduexps = data.eduExpList
             this.resumeWorks = data.jobExpList
@@ -294,8 +292,8 @@ export default {
 .resume-name h1 
     color #000000
     font-size 20px 
-    padding-left 15px 
-    padding-top 10px
+    padding-left 29px 
+    padding-top 23px
 .resume-name p 
     padding 5px 0 0 15px
     color #999999
@@ -349,7 +347,9 @@ export default {
 .education-list h2 
     color #000000
     font-size 16px
+    padding-left 15px
 .education-list p
+    padding-left 15px
     padding-top 8px
     font-size 14px
     color #666666

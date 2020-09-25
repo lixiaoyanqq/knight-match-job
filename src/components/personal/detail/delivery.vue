@@ -23,20 +23,10 @@
                                 height="80"
                                 :src="baseInfo.userType === '0' ? item.entpImg : item.avatar"/>
                         </van-col>
-                        <van-col span="12">
+                        <van-col span="16">
                             <h1 class="view-value" @click="onDetail(item)">{{baseInfo.userType === '0' ? item.entpName : item.userName}}</h1>
                             <h1>{{baseInfo.userType === '0' ? '投递职位' : '应聘岗位'}}：{{baseInfo.userType === '0' ? item.postName : item.postName}}</h1>
-                            <p>
-                                <span>北京</span>
-                                <span>|</span>
-                                <span>本科</span>
-                                <span>|</span>
-                                <span>应届生</span>
-                            </p>
-                        </van-col>
-                        <van-col span="4">
-                            <h2>12-14k</h2>
-                            <!-- <h3>未处理</h3> -->
+                            <h1>{{item.createTime}}</h1>
                         </van-col>
                     </van-row>
                 </div>
@@ -119,9 +109,8 @@ export default {
     z-index: 999;
     overflow-y scroll
 .delivery-list
-    margin-top 4rem
     width 90%
-    margin 3rem auto
+    margin 5rem auto 0
     color #000000
 .delivery-list .delivery-tit
     height 30px

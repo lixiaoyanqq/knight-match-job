@@ -1,8 +1,24 @@
 <template>
   <div class="personal">
     <div class="personal-header">
-      <div
-        v-show="userInfo.userType === '0'" class="personal-account" @click="goPage('userCenter')">
+      <div v-show="!isLogin" class="personal-account" @click="goLogin">
+        <van-row>
+          <van-col span="8">
+            <div class="head-portrait">
+              <img :src="userHead" />
+            </div>
+          </van-col>
+          <van-col span="14">
+            <p class="user-name">登录</p>
+          </van-col>
+          <van-col span="2">
+            <span class="right-icon">
+              <van-icon :name="rightIconW" />
+            </span>
+          </van-col>
+        </van-row>
+      </div>
+      <div v-show="isLogin && userInfo.userType === '0'" class="personal-account" @click="goPage('userCenter')">
         <van-row>
           <van-col span="8">
             <div class="head-portrait">
@@ -19,11 +35,7 @@
           </van-col>
         </van-row>
       </div>
-      <div
-        v-show="userInfo.userType === '1'"
-        class="personal-account"
-        @click="goPage('userCenter')"
-      >
+      <div v-show="isLogin && userInfo.userType === '1'" class="personal-account" @click="goPage('userCenter')">
         <van-row>
           <van-col span="8">
             <div class="head-portrait">
@@ -154,8 +166,10 @@
 import * as userApi from 'api/user'
 import * as compApi from "api/company"
 import { getLocalStore } from "utils/global"
-import { Toast } from 'vant'
+import { mapActions } from 'vuex'
+import { Toast, Dialog } from 'vant'
 import { BASE_URL } from 'api/config'
+import * as userType from 'store/user/mutations_types'
 export default {
   inject: ['reload'],
   data() {
@@ -174,11 +188,15 @@ export default {
       view: "",
       interview: "",
       notfit: "",
-      nameLength: 5
+      nameLength: 5,
+      isLogin: false
     };
   },
   computed: {},
   methods: {
+    ...mapActions({
+      logout: userType.LOGOUT
+    }),
     goPage(name) {
       this.$router.push({ name });
     },
@@ -222,6 +240,10 @@ export default {
     },
     onCancel () {
       this.feedback = false
+    },
+    goLogin () {
+      this.logout()
+      this.$router.push({ name: 'login'})
     },
     onDelivery() {
       this.$router.push({
@@ -315,11 +337,29 @@ export default {
     async getUserBaseInfo () {
       let data = await userApi.fetchUserBaseInfo()
       if (data.code === '200') {
+        this.isLogin = true
         this.userBaseInfo = data.content
         this.userBaseInfo.profilePicture ? this.userHead = `${BASE_URL}${this.userBaseInfo.profilePicture}` : 
         this.userHead = require("common/image/home/default-avatar.jpeg")
+      } else if (data.code === '0004') {
+        this.userHead = require("common/image/home/default-avatar.jpeg")
+        this.isLogin =  false
+        // Dialog.confirm({
+        //     title: '退出提示',
+        //     message: '登录过期，请先登录',
+        //     beforeClose: this.beforeClose
+        // })
       }
-    }
+    },
+    beforeClose(action, done){
+      if(action === 'confirm'){
+          this.logout()
+          this.$router.push({ name: 'login'})
+          done()
+      } else {
+          done()
+      }
+    },
   },
   mounted() {
     this.init();

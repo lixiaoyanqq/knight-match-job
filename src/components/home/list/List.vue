@@ -67,7 +67,8 @@ import CardList from '../card/Card-list'
 import CardFooter from '../card/Card-footer'
 import { mapState, mapActions, mapGetters } from "vuex";
 import * as type from "store/home/mutations_types";
-import { Toast } from 'vant'
+import { Dialog, Toast } from 'vant'
+import * as userType from 'store/user/mutations_types'
 export default {
   components:{
     Search,
@@ -107,6 +108,9 @@ export default {
     };
   },
   methods: {
+    ...mapActions({
+      logout: userType.LOGOUT
+    }),
     async onLike(){
       let data = await userApi.isLike(this.prms)
       if(data && data.content && data.content.recordStatus){
@@ -117,25 +121,47 @@ export default {
           this.isLisk = true
           this.likeIcon = require('common/image/home/solid-heart.png')
         }
+      } else if (data.code === '0004') {
+        console.log('未登录喜欢',data)
+        Dialog.confirm({
+          title: '退出提示',
+          message: '登录过期，请先登录',
+          beforeClose: this.beforeClose
+        })
       }
       this.getLikeNumber()
+    },
+    beforeClose(action, done){
+      if(action === 'confirm'){
+          this.logout()
+          this.$router.push({ name: 'login'})
+          done()
+      } else {
+          done()
+      }
     },
     onLiveMsg(){
       this.feedback = true
       this.remarkIcon = require('common/image/home/solid-message.png')
     },
-    onCommit(){
+    async onCommit(){
       let params = {
         userMobile: this.backPhone,
         comment: this.backMessage,
         resId: '1',
         resType: 3
       }
-      userApi.leaveMessage(params).then(res => {
-      if(res.code === '200')
+      let data = await userApi.leaveMessage(params)
+      if(data.code === '200') {
         Toast.success('操作成功')
-      })
-      
+        this.getCommentsNumber()
+      } else if (data.code === '0004') {
+        Dialog.confirm({
+            title: '退出提示',
+            message: '登录过期，请先登录',
+            beforeClose: this.beforeClose
+        })
+      }
       this.feedback = false
       this.remarkIcon = require('common/image/home/hollow-message.png')
     },
@@ -169,6 +195,12 @@ export default {
           this.isCollection = true
           this.starIcon = require('common/image/home/solid-collection.png')
         }
+      } else if (data.code === '0004') {
+        Dialog.confirm({
+            title: '退出提示',
+            message: '登录过期，请先登录',
+            beforeClose: this.beforeClose
+        })
       }
       this.getCollectionNumber()
     },

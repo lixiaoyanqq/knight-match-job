@@ -94,13 +94,16 @@ import * as type from "store/home/mutations_types"
 import * as homeApi from 'api/home'
 import * as userApi from 'api/user'
 import { getLocalStore } from 'utils/global'
-import { Toast } from 'vant'
+import { Dialog, Notify, Toast } from 'vant'
+import store from 'store'
+import * as userType from 'store/user/mutations_types'
 export default {
     data () {
         return {
             refreshing: false,
             loading: false,
             finished: false,
+            isLogin: false,
             renPic: require('common/image/home/ren.png'),
             userInfo: JSON.parse(getLocalStore('baseInfo')) || { userStatus : '0'},
             value: 2.5,
@@ -130,7 +133,8 @@ export default {
     methods:{
         ...mapActions({
             fetchCards: type.FETCH_CARDS,
-            fetchRecommend: type.FETCH_RECOMMEND
+            fetchRecommend: type.FETCH_RECOMMEND,
+            logout: userType.LOGOUT
         }),
         async getCards(){
             let that = this
@@ -224,10 +228,28 @@ export default {
             }
         },
         onLikeResumeDetail(resume){
-            this.$router.push({name: 'likeResumeDetail', query: {cvId: resume.cvId}})
+            if (this.isLogin) {
+                this.$router.push({name: 'likeResumeDetail', query: {cvId: resume.cvId}})
+            } else {
+                Dialog.confirm({
+                    title: '退出提示',
+                    message: '登录过期，请先登录',
+                    beforeClose: this.beforeClose
+                })
+            }
+            
         },
         selectPos (id) {
-            this.$router.push({name: 'posDetail', query: {id: id}})
+            if (this.isLogin) {
+                this.$router.push({name: 'posDetail', query: {id: id}})
+            } else {
+                Dialog.confirm({
+                    title: '退出提示',
+                    message: '登录过期，请先登录',
+                    beforeClose: this.beforeClose
+                })
+            }
+            
         },
         async onLikePos(item){
             let params = {
@@ -242,6 +264,21 @@ export default {
                 this.pageNum = '2'
                 this.pageSize = '5'
                 this.getCards()
+            } else if (data.code === '0004') {
+                Dialog.confirm({
+                    title: '退出提示',
+                    message: '登录过期，请先登录',
+                    beforeClose: this.beforeClose
+                })
+            }
+        },
+        beforeClose(action, done){
+            if(action === 'confirm'){
+                this.logout()
+                this.$router.push({ name: 'login'})
+                done()
+            } else {
+                done()
             }
         },
         async init(){
@@ -262,12 +299,21 @@ export default {
                 document.getElementById('resume-content').style.minHeight = (winHeight - 300) +'px'
             }
             
+        },
+        async getUserInfo () {
+            let data = await userApi.fetchUserBaseInfo()
+            if(data.code === '200') {
+                this.isLogin = true
+            } else if (data.code === '0004') {
+                this.isLogin = false
+            }
         }
     },
     mounted () {
         // this.init()
         this.getCards()
         this.loadHeight()
+        this.getUserInfo()
     },
     watch: {
         'idkey': {

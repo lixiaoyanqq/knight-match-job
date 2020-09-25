@@ -76,6 +76,7 @@ export default {
                         this.interviews = data.content.listx.map( item => {
                             return {...item, avatar: `${BASE_URL}${item.userHeadPic}`, entpImg: item.entpLogo ? `${BASE_URL}${item.entpLogo}` : null}
                         })
+                        console.log('this.interviews',this.interviews)
                         // this.deloveries = JSON.parse(JSON.stringify(data.content.listx))
                     }
                 }
@@ -110,9 +111,8 @@ export default {
     z-index 999
     overflow-y scroll
 .interview-list
-    margin-top 4rem
     width 90%
-    margin 3rem auto
+    margin 5rem auto 0
     color #000000
 .interview-list .interview-tit
     height 30px

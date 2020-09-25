@@ -110,7 +110,7 @@ export default {
             showPost: false,
             currentDate: new Date(),
             minDate: new Date(1900, 0, 1),
-            maxDate: new Date(2050, 10, 1),
+            maxDate: new Date(),
             phone_rule: [{ pattern: /^1[3456789]\d{9}$/, message: '请输入正确手机号' }],
             email_rule: [{ pattern: /^[A-Za-z0-9]+([_\.][A-Za-z0-9]+)*@([A-Za-z0-9\-]+\.)+[A-Za-z]{2,6}$/, message: '输入正确的邮箱号'}],
             postLists: [],
@@ -137,7 +137,7 @@ export default {
             }
             this.invitForm.iviewTime = this.iviewTime
             console.log('form', this.invitForm)
-            let data = await this.recruitId ? postApi.offerInterView(this.invitForm) : postApi.sentInterView(this.invitForm)
+            let data = this.recruitId ? await postApi.offerInterView(this.invitForm) : await postApi.sentInterView(this.invitForm)
             if (data.code === '200') {
                 Toast.success('发送成功')
                 this.$router.back()
@@ -146,8 +146,6 @@ export default {
                 Toast.fail('邀请失败，请重新操作')
                 this.resetForm()
             }
-            // console.log('data',data)
-            
         },
         // 显示弹窗
         showPopup () {

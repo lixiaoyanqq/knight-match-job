@@ -59,11 +59,20 @@
                     :rules="email_rule" />
             </van-cell-group>
             <van-cell-group class="base-info-group" v-if="isHopeInfo">
-                <van-field 
+                <!-- <van-field 
                     v-model="resumeForm.expectCitys" 
                     name="expectCitys" 
                     label="期望城市" 
-                    placeholder="请输入期望的工作城市" />
+                    placeholder="请输入期望的工作城市" /> -->
+                <van-field
+                    v-model="expectCitys"
+                    readonly
+                    clickable
+                    label="期望城市" 
+                    name="expectCitys"
+                    :value="expectCitys"
+                    placeholder="期望城市"
+                    @click="showCityPicker = true"/>
                 <van-field
                     v-model="expectJobNature"
                     readonly
@@ -114,11 +123,20 @@
                     name="proName" 
                     label="专业" 
                     placeholder="请输入专业" />
-                <van-field 
+                <!-- <van-field 
                     v-model="resumeForm.education" 
                     name="education" 
                     label="学历" 
-                    placeholder="请输入学历" />
+                    placeholder="请输入学历" /> -->
+                <van-field
+                    v-model="education"
+                    readonly
+                    clickable
+                    label="学历" 
+                    name="education"
+                    :value="education"
+                    placeholder="选择学历"
+                    @click="onHopePicker('education')"/>
                 <van-field
                     v-model="startTime"
                     readonly
@@ -221,12 +239,20 @@
                 :formatter="formatter"/>
             </van-popup>
             <van-popup v-model="showHopePicker" round position="bottom">
-            <van-picker
-                show-toolbar
-                :columns="columns"
-                @cancel="onHopeCancel"
-                @confirm="onHopeConfirm"/>
-        </van-popup>
+                <van-picker
+                    show-toolbar
+                    :columns="columns"
+                    @cancel="onHopeCancel"
+                    @confirm="onHopeConfirm"/>
+            </van-popup>
+            <van-popup v-model="showCityPicker" round position="bottom">
+                <van-area 
+                    title="选择期望城市" 
+                    :area-list="areaList" 
+                    :columns-num="2" 
+                    @cancel="showCityPicker = false"
+                    @confirm="onCityConfirm"/>
+            </van-popup>
         </van-form>
     </div>
 </template>
@@ -236,6 +262,7 @@ import * as resumeApi from 'api/resume'
 import * as resumeType from 'store/resume/mutations_types'
 import { mapState, mapActions } from 'vuex'
 import { Toast } from 'vant'
+import areaData from "utils/area"
 export default {
     inject: ['reload'],
     data () {
@@ -260,9 +287,10 @@ export default {
             isLoadingShow: true,
             showPicker: false,
             showHopePicker: false,
+            showCityPicker: false,
             currentDate: new Date(),
             minDate: new Date(1900, 0, 1),
-            maxDate: new Date(2050, 10, 1),
+            maxDate: new Date(),
             className: '',
             phone_rule: [{ pattern: /^1[3456789]\d{9}$/, message: '请输入正确手机号' }],
             email_rule: [{ pattern: /^[A-Za-z0-9]+([_\.][A-Za-z0-9]+)*@([A-Za-z0-9\-]+\.)+[A-Za-z]{2,6}$/, message: '输入正确的邮箱号'}],
@@ -277,7 +305,11 @@ export default {
                 { text: '兼职', value: '02' },
                 { text: '实习', value: '03' }
             ],
-            hopeSalares: ['2k-5k','6k-10k','11k-15k', '16k-20k','21k-30k','30k-40k','50k-70k']
+            hopeSalares: ['2k-5k','6k-10k','11k-15k', '16k-20k','21k-30k','30k-40k','50k-70k'],
+            education: '',
+            educations: ['博士', '硕士', '研究生', '本科', '大专'],
+            expectCitys: '',
+            areaList: ''
         }
     },
     computed: {
@@ -295,6 +327,8 @@ export default {
             this.fetchBaseInfo()
         },
         init(){
+            console.log('城市',areaData)
+            this.areaList = areaData
             if(this.isUpdate){
                 this.updataInitFetch().then( res => { this.updateInit(res)})
             } 
@@ -323,6 +357,7 @@ export default {
                     this.expectJobNature = valObject.text
                     this.expectJobNatureVal = valObject.value
                     this.expectSalary = initFetchData.content.expectSalary
+                    
                 }
                 if (initFetchData.content.startTime && initFetchData.content.endTime) {
                     this.startTime = initFetchData.content.startTime
@@ -340,6 +375,13 @@ export default {
                 if (initFetchData.content.birthYear) {
                     this.birthYear = initFetchData.content.birthYear
                 }
+                if (initFetchData.content.education) {
+                    this.education = initFetchData.content.education
+                }
+                if (initFetchData.content.expectCitys) {
+                   this.expectCitys = initFetchData.content.expectCitys 
+                }
+                
             }
             this.resumeForm = this._.merge({}, resumeUtil.BASE_FORM, initFetchData.content, {id: this.id})
         },
@@ -433,9 +475,11 @@ export default {
             if (this.pickerName === 'expectJobNature') {
                 this.columns = this.jobNature
             }
-
             if (this.pickerName === 'expectSalary') {
                 this.columns = this.hopeSalares
+            }
+            if (this.pickerName === 'education') {
+                this.columns = this.educations
             }
 
         },
@@ -453,13 +497,23 @@ export default {
                this[this.pickerName] = val
                this.showHopePicker = false
             }
+            if(this.pickerName === 'education') {
+                this[this.pickerName] = val
+                this.showHopePicker = false
+            }
             
+        },
+        onCityConfirm (val) {
+            console.log('城市',val[1].name)
+            this.expectCitys = val[1].name
+            this.showCityPicker = false
         },
         onShowPicker(name){
             this.showPicker = true
             this.timeName = name
         },
         onConfirm (val) {
+            console.log('时间',val)
             let year = val.getFullYear()
             let month = val.getMonth() + 1
             let day = val.getDate()
@@ -471,7 +525,13 @@ export default {
             if (minute >= 0 && minute <= 9) { minute = `0${minute}` }
             this.className = 'timeClass'
             // this.timeValue = `${year}-${month}-${day} ${hour}:${minute}`
+            if(this.timeName === 'startTime') {
+                console.log('设置:结束时间不能小于开始时间')
+            } else if (this.timeName === 'endTime') {
+                console.log('设置:开始时间不是大约结束时间')
+            }
             this[this.timeName] = `${year}-${month}`
+
             this.showPicker = false
         },
         // 选项格式化函数

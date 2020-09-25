@@ -6,6 +6,7 @@ export default {
         let data = await user.login(playload)
         context.commit(type.SET_TOKEN, data.content.token)
         context.commit(type.SET_BADE_INFO, data.content.baseInfo)
+        return data
     },
 
     async [type.REGISTER] (context, playload = {}) {

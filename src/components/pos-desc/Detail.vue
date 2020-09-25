@@ -11,7 +11,7 @@
                 <van-icon :name="leftIcon" size="20" />
             </template>
         </van-nav-bar>
-        <section class="desc-swipe">
+        <!-- <section class="desc-swipe">
             <van-swipe class="my-swipe" :width="'100%'" :height="200" :autoplay="3000" indicator-color="white">
                 <van-swipe-item v-for="(image, index) in images" :key="index">
                     <div class="pos-pic">
@@ -19,11 +19,16 @@
                     </div>
                 </van-swipe-item>
             </van-swipe>
+        </section> -->
+        <section class="company-logo">
+            <div class="head-portrait">
+              <img :src="userHead" />
+            </div>
         </section>
         <section class="pos-name">
             <van-row>
                 <van-col span="20">
-                    <h1>{{allData.postDept}}（{{allData.postName}}）</h1>
+                    <h1>{{allData.postName}}</h1>
                     <p class="">
                         <span>{{allData.postCity}}</span>
                         <span>{{allData.reqJobExp}}</span>
@@ -78,7 +83,7 @@
         <section class="pos-comments">
             <h1 class="all-rate">
                 <span>4.5</span>
-                <van-rate v-model="allRateValue" allow-half color="#ff5a8c" :size="18" void-icon="star" />
+                <van-rate v-model="allRateValue" readonly allow-half color="#ff5a8c" :size="18" void-icon="star" />
             </h1>
             <div class="my-comments">
                 <van-row>
@@ -88,7 +93,7 @@
                         </div>
                     </van-col>
                     <van-col span="18">
-                        <h2>{{baseInfo.nickName}}</h2>
+                        <h2>{{baseInfo.nickName || '我的名字'}}</h2>
                         <p class="my-rate">
                             <span>星级</span>
                             <van-rate v-model="myRateValue" :size="16" color="#ff5a8c" allow-half void-icon="star" />
@@ -118,7 +123,7 @@
                         <h2>{{comment.userName || '游客评论'}}</h2>
                         <p class="comment-rate">
                             <span>星级</span>
-                            <van-rate v-model="comment.startsNum" allow-half :size="16" color="#ff5a8c" void-icon="star" />
+                            <van-rate v-model="comment.startsNum" readonly allow-half :size="16" color="#ff5a8c" void-icon="star" />
                         </p>
                         <p class="comment-cont">
                             {{comment.comment}}
@@ -130,13 +135,13 @@
         </section>
         <section class="other-recommend">
             <h1>其他推荐</h1>
-            <div class="recommend-card" v-for="(recommment, index) in otherRecommends" :key="index">
+            <div class="recommend-card" @click="onPosDetail(recommment.id)" v-for="(recommment, index) in otherRecommends" :key="index">
                 <van-row>
                     <van-col span="10">
                         <van-image :src="recommment.entpLogo || defaultAvatar" />
                     </van-col>
                     <van-col span="14">
-                        <h2 @click="onPosDetail(recommment.id)">
+                        <h2>
                             <span>{{recommment.postName}}</span>
                         </h2>
                         <p class="view-value">
@@ -195,7 +200,8 @@ export default {
                 { name:'互联网', color: '#f9e6c2'}
             ],
             comments: [],
-            otherRecommends: []
+            otherRecommends: [],
+            userHead: '',
         }
     },
     methods: {
@@ -211,7 +217,12 @@ export default {
             }
         },
         getMyPic () {
-            this.myPic = `${BASE_URL}${this.baseInfo.profilePicture}`
+            console.log('this.baseInfo.profilePicture',this.baseInfo)
+            if (this.baseInfo.profilePicture) {
+                this.myPic = `${BASE_URL}${this.baseInfo.profilePicture}`
+            } else {
+                this.myPic = require("common/image/home/default-avatar.png")
+            }
         },
         getPosDetail(){
             posApi.posDetail(this.id)
@@ -233,7 +244,6 @@ export default {
                         this.comments = data.content.listx.map(item => {
                             return {...item, userHeadImg: `${BASE_URL}${item.userHeadPic}`}
                         })
-                        console.log('this.comments',this.comments)
                     }
                 })
         },
@@ -244,11 +254,13 @@ export default {
                 this.otherRecommends = data.content.listx.map( item => {
                     return {...item, companyLogo: `${BASE_URL}${item.entpLogo}`}
                 })
-                console.log('this.otherRecommends',this.otherRecommends)
             }
         },
         formatFetchDetail(fetchDate){
             this.allData = fetchDate.content
+            console.log('this.allData',this.allData)
+            this.allData.entpLogo ? this.userHead = `${BASE_URL}${this.allData.entpLogo}` : 
+            this.userHead = require("common/image/home/default-avatar.png")
             this.postRequirements = this.transformArray(fetchDate.content.postRequirements)
             this.postAllures = this.transformArrayObj(fetchDate.content.postAllure)
             this.postDemands = this.transformArray(fetchDate.content.postDemand)
@@ -270,6 +282,7 @@ export default {
 
         },
         onPosDetail(id){
+            console.log('职位详情',id)
             this.$router.push({name: 'posDetail', query: {id: id}})
         },
         async onFover(val){
@@ -336,8 +349,25 @@ export default {
     z-index 999
     background $color-background
     overflow-y scroll
-.desc-swipe
+// .desc-swipe
+//     margin-top 4rem
+.company-logo
     margin-top 4rem
+    text-align center
+    width 100%
+    padding 30px 0
+.head-portrait {
+    margin 0 auto
+    width: 80px;
+    height: 80px;
+    border-radius: 40px;
+    overflow: hidden;
+}
+
+.head-portrait img {
+  width: 100%;
+  height: 100%;
+}
 .pos-pic
     width 80%
     height 90%
@@ -406,14 +436,14 @@ export default {
     color #ff5a8c
     font-size 24px
 .my-comments .my-pic
-    width 80px
-    height 80px
+    width 60px
+    height 60px
     margin 3px auto
     border-radius 50%
     overflow hidden
 .comments-list .comment-pic
-    width 80px
-    height 80px
+    width 60px
+    height 60px
     margin 3px auto
     border-radius 50%
     overflow hidden

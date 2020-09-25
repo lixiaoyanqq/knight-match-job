@@ -56,21 +56,6 @@
                 </van-col>
             </van-row>
         </section>
-        <section class="personal-profile">
-            <h1>
-                <van-row>
-                <van-col span="20">
-                    <span>个人简介</span>
-                </van-col>
-                <van-col span="4">
-                    <van-button class="opr-btn" size="mini" @click="editIntro(resemeBaseInfo.id)" :icon="editIcon" />
-                </van-col>
-                </van-row>
-            </h1>
-            <p>
-                {{resemeBaseInfo.selfEvaluation || '-'}}
-            </p>
-        </section>
         <section class="education">
             <h1>
                 <van-row>
@@ -84,12 +69,7 @@
             </h1>
             <div class="education-list" v-for="(eduexp, index) in resuemEduexps.listx" :key="index">
                 <van-row>
-                    <van-col span="8">
-                        <div class="school-pic">
-                            <van-image :src="eduexp.schoolImg || schoolImg"/>
-                        </div>
-                    </van-col>
-                    <van-col span="11">
+                    <van-col span="19">
                         <h2>{{eduexp.schoolName}}</h2>
                         <p><span>{{eduexp.education}}</span><span>-</span><span>{{eduexp.proName}}</span></p>
                         <p><span>{{eduexp.startTime}}</span><span>-</span><span>{{eduexp.endTime}}</span></p>
@@ -169,6 +149,21 @@
                 </ul> 
                 <van-divider />
             </div>
+        </section>
+        <section class="personal-profile">
+            <h1>
+                <van-row>
+                <van-col span="20">
+                    <span>个人简介</span>
+                </van-col>
+                <van-col span="4">
+                    <van-button class="opr-btn" size="mini" @click="editIntro(resemeBaseInfo.id)" :icon="editIcon" />
+                </van-col>
+                </van-row>
+            </h1>
+            <p>
+                {{resemeBaseInfo.selfEvaluation || '-'}}
+            </p>
         </section>
         <transition name="van-slide-right">
             <router-view></router-view>
@@ -445,10 +440,12 @@ export default {
 .education-list h2 
     color #000000
     font-size 16px
+    padding-left 15px
 .education-list p
     padding-top 8px
     font-size 14px
     color #666666
+    padding-left 15px
 .work-list h2 
     color #000000
     font-size 14px
@@ -495,6 +492,8 @@ export default {
     border none
 .hope-infor .van-tag
     margin 3px 0
+.hope-infor .van-tag:first-child
+    margin-left 10px
 .head-portrait {
   width: 80px;
   height: 80px;

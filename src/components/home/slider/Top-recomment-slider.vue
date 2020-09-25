@@ -14,7 +14,7 @@
                         <div class="slider-content">
                             <h1 class="view-value" @click="onPosDetail(top.id)">
                                 {{top.postName}}
-                                <van-icon size="22" name="https://icon.qiantucdn.com/static/images/index/banner-download-entry4.gif" />
+                                <van-icon :name="intoDetailIcon" size="50" />
                             </h1>
                             <p class="view-value">{{top.entpName}}</p>
                             <p>{{top.reflushFmtTime}}</p>
@@ -32,7 +32,7 @@
                         <div class="slider-content">
                             <h1 @click="onResDetail(top.cvId)">
                                 {{top.name || '-'}}
-                                <van-icon name="https://icon.qiantucdn.com/static/images/index/banner-download-entry4.gif" />
+                                <van-icon :name="intoDetailIcon" />
                             </h1>
                             <p>{{top.schoolName || '-'}}</p>
                             <p>{{top.degree || '-'}}</p>
@@ -49,15 +49,20 @@
 import { getLocalStore } from 'utils/global'
 import { mapActions, mapGetters, mapState} from 'vuex'
 import * as type from "store/home/mutations_types"
+import * as userType from 'store/user/mutations_types'
 import * as homeApi from 'api/home'
+import * as userApi from 'api/user'
+import { Dialog } from 'vant'
 export default {
     inject: ['reload'],
     data () {
         return {
             baseInfo: JSON.parse(getLocalStore('baseInfo')) || { userStatus : '1'},
             rightIcon: require('common/image/home/let-right-icon.png'),
+            intoDetailIcon: require('common/image/home/into-detail.png'),
             resumeTop5: [],
-            postTop5: []
+            postTop5: [],
+            isLogin: false
         }
     },
     computed: {
@@ -75,7 +80,8 @@ export default {
     },
     methods: {
         ...mapActions({
-            fetchTop5: type.FETCH_TOP5
+            fetchTop5: type.FETCH_TOP5,
+            logout: userType.LOGOUT
         }),
         async getTop5(){
             if(this.baseInfo.userType === '0') {
@@ -102,18 +108,53 @@ export default {
             // return this.fetchTop5()
         },
         onPosDetail(id){
-            this.$router.push({name: 'posDetail', query: {id: id}})
+            if (this.isLogin) {
+                this.$router.push({name: 'posDetail', query: {id: id}})
+            } else {
+                Dialog.confirm({
+                    title: '退出提示',
+                    message: '登录过期，请先登录',
+                    beforeClose: this.beforeClose
+                })
+            }
+        },
+        beforeClose(action, done){
+            if(action === 'confirm'){
+                this.logout()
+                this.$router.push({ name: 'login'})
+                done()
+            } else {
+                done()
+            }
         },
         onResDetail(clId){
-            this.$router.push({name: 'likeResumeDetail', query: {cvId: clId}})
+            if (this.isLogin) {
+                this.$router.push({name: 'likeResumeDetail', query: {cvId: clId}})
+            } else {
+                Dialog.confirm({
+                    title: '退出提示',
+                    message: '登录过期，请先登录',
+                    beforeClose: this.beforeClose
+                })
+            }
+            
         },
         setScrollTop () {
             // let stop = this.$refs.topRecomment.childNodes[0].setScrollTop
             // console.log('stop',stop)
+        },
+        async getUserInfo () {
+            let data = await userApi.fetchUserBaseInfo()
+            if(data.code === '200') {
+                this.isLogin = true
+            } else if (data.code === '0004') {
+                this.isLogin = false
+            }
         }
     },
     created (){
         this.getTop5()
+        this.getUserInfo()
     },
     watch: {
         'idkey': {
@@ -136,7 +177,7 @@ export default {
 </script>
 <style lang="stylus" scoped>
 @import '~common/stylus/variable'
-
+@import '~common/stylus/mixin'
 .top-tit
     width 100%
     height 60px
@@ -167,16 +208,13 @@ export default {
 .slider-content
     width 180px
     margin  0 auto
-    padding-top 130px
+    padding-top 110px
     color $color-text
 .slider-content h1
     font-size 18px
     line-height 32px
     font-weight bolder
     padding 0 10px
-.slider-content h1 .van-icon
-    position relative
-    top 3px
 .slider-content p
     line-height 24px
     padding 0 10px
@@ -187,6 +225,11 @@ export default {
 .slider-content span 
     font-size 14px
     padding-left 5px
+.slider-content h1 .van-icon
+    animation mymove 1s infinite
+    -webkit-animation mymove 1s infinite
+    position relative
+    top 16px
 .view-value
   display -webkit-box
   overflow hidden
@@ -195,4 +238,9 @@ export default {
   -webkit-box-orient vertical
 .pos-salary
     font-weight bolder
+@keyframes mymove
+    from 
+        left 0px
+    to 
+        left 10px
 </style>

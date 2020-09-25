@@ -111,9 +111,8 @@ export default {
     z-index: 999;
     overflow-y scroll
 .notfit-list
-    margin-top 4rem
     width 90%
-    margin 3rem auto
+    margin 5rem auto 0
     color #000000
 .notfit-list .notfit-tit
     height 30px
