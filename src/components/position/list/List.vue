@@ -1,37 +1,17 @@
 <template>
     <div class="position-collect">
-        <van-sticky :offset-top="0" class="sticky">
-            <div class="collection-search">
-                <van-row>
-                    <!-- <van-col span="4" class="city-menu">
-                        <van-dropdown-menu>
-                        <van-dropdown-item v-model="value" :options="option" />
-                        </van-dropdown-menu>
-                    </van-col> -->
-                    <van-col span="24">
-                        <form action="/">
-                            <van-search 
-                                v-model="searchKey"
-                                background="#e6e9f5"
-                                shape="round"
-                                left-icon=""
-                                :right-icon="searchIcon"
-                                placeholder="搜索感谢兴趣的职位/公司"></van-search>
-                        </form>
-                    </van-col>
-                </van-row>
-            </div>
-        </van-sticky>
+        <van-nav-bar title="职位收藏列表"
+                 fixed
+                 :border='false'
+                 style="height:4rem">
+        </van-nav-bar>
         <div class="collection-list">
-            <div class="position-tit">
-                <h1>收藏列表</h1>
-            </div>
-            <div v-if="collects.listx !== undefined && collects.listx.length > 0">
-                <div class="position-card" v-for="collect in collects.listx" :key="collect.id">
+            <div v-if="collects !== undefined && collects.length > 0">
+                <div class="position-card" v-for="collect in collects" :key="collect.id">
                     <van-row>
                         <van-col span="10">
                             <div class="list-image">
-                                <img :src="collect.entpLogo">
+                                <img :src="collect.entpLogo ? collect.newLogo : defaultAvatar">
                             </div>
                         </van-col>
                         <van-col span="14">
@@ -79,6 +59,7 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import * as posType from 'store/position/mutations_types'
+import { BASE_URL } from 'api/config'
 export default {
     data () {
         return {
@@ -87,6 +68,7 @@ export default {
             touchable: true,
             deleteIcon: require('common/image/position/delete.png'),
             deliveryIcon: require('common/image/position/delivery.png'),
+            defaultAvatar: require("common/image/home/default-avatar.jpeg"),
             value: 0,
             searchKey: '',
             searchIcon: require('common/image/home/search.png'),
@@ -106,7 +88,12 @@ export default {
             positions (state) {
                 return state.position.positions
             }
-        })
+        }),
+        newPositions: function () {
+            this.positions.listx.map(item => {
+                return {...item, newLogo: `${BASE_URL}${item.entpLogo}`}
+            })
+        }
     },
     methods: {
         ...mapActions({
@@ -121,9 +108,11 @@ export default {
         async getPostList(){
             let data = await this.fetchPosList()
             if(data.code === '200'){
-                this.collects = data.content
+                this.collects = data.content.listx.map(item => {
+                    return {...item, newLogo: `${BASE_URL}${item.entpLogo}`}
+                })
             }
-            // console.log('data1111',this.collects.listx.length)
+            console.log('data1111',this.collects)
         }
     },
     mounted(){
@@ -135,6 +124,7 @@ export default {
 @import "~common/stylus/variable";
 @import "~common/stylus/mixin";
 .collection-list
+    margin-top 5rem
     margin-bottom 80px
 .position-tit
     width 100%

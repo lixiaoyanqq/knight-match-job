@@ -154,17 +154,25 @@ export default {
                if (this.compForm.id) {
                     this.entpType = this.entpTypes[Number(this.compForm.entpType) -1]
                     this.personScope = this.personScopes[Number((this.compForm.personScope).substring(1)) -1]
-                    let logUrl ={
-                        url: `${BASE_URL}${this.compForm.entpLogo}`
+                    console.log('this.compForm',this.compForm)
+                    if (this.compForm.entpLogo) {
+                        let logUrl ={
+                            url: `${BASE_URL}${this.compForm.entpLogo}`
+                        }
+                        this.uploader.push(logUrl)
+                    } else {
+                        let logUrl ={
+                            url: require("common/image/personal/user-head.png")
+                        }
+                        this.uploader.push(logUrl)
                     }
-                    this.uploader.push(logUrl)
                } else {
-                   console.log('初始化头像')
-                   let difaultPic = {
-                        // url: require("common/image/home/default-avatar.jpeg")
-                        url: require("common/image/personal/user-head.png")
-                   }
-                   this.uploader.push(difaultPic)
+                //    console.log('初始化头像')
+                //    let difaultPic = {
+                //         // url: require("common/image/home/default-avatar.jpeg")
+                //         url: require("common/image/personal/user-head.png")
+                //    }
+                //    this.uploader.push(difaultPic)
                }
                
             //    console.log('this.entpType',this.entpType)

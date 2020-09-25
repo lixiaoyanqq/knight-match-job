@@ -32,7 +32,7 @@
                         <div class="slider-content">
                             <h1 @click="onResDetail(top.cvId)">
                                 {{top.name || '-'}}
-                                <van-icon :name="intoDetailIcon" />
+                                <van-icon :name="intoDetailIcon" size="50" />
                             </h1>
                             <p>{{top.schoolName || '-'}}</p>
                             <p>{{top.degree || '-'}}</p>
