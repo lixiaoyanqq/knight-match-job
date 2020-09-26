@@ -71,6 +71,14 @@ export const BASE_FORM = {
   education: '',          //学历
   unified: '',            //是否统招
   eduDesc: '',            //学习情况描述
+  //项目经历
+  projectName: '',        //项目名称
+  projectEntpName: '',    //项目所在公司
+  projectPost: '',        //所任职位
+  startProjectTime: '',   //项目开始时间
+  endProjectTime: '',     //项目结束时间
+  projectDesc: '',        //项目介绍
+  projectType: '',        //项目类型
   //工作经历
   entpName: '',           //公司名称
   post: '',//职位

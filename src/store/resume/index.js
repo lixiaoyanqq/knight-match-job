@@ -9,7 +9,8 @@ const state = {
         works: {},
         awards: {},
         resumes: {},
-        resume:{}
+        resume:{},
+        projects: {}
     }
 }
 

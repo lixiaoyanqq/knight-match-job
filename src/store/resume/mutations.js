@@ -21,6 +21,10 @@ export default {
         state.resume.awards = awards
     },
 
+    [type.FETCH_R_PROJECT_EXPS] (state, projects = {}) {
+        state.resume.projects = projects
+    },
+
     [type.FETCH_RESUMES] (state, resumes = {}) {
         state.resume.resumes = resumes
     },

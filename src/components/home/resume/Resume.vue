@@ -10,15 +10,6 @@
                 <van-icon :name="leftIcon" size="20" />
             </template>
         </van-nav-bar>
-        <!-- <section class="desc-swipe">
-            <van-swipe class="my-swipe" :width="'100%'" :height="200" :autoplay="3000" indicator-color="white">
-                <van-swipe-item v-for="(image, index) in images" :key="index">
-                    <div class="resume-pic">
-                        <van-image :src="image" />
-                    </div>
-                </van-swipe-item>
-            </van-swipe>
-        </section> -->
         <section class="company-logo">
             <div class="head-portrait">
               <img :src="userHead" />
@@ -79,6 +70,38 @@
                         <van-button class="opr-btn" size="mini" @click="delEducation(eduexp.id)" :icon="delIcon" />
                     </van-col>
                 </van-row>
+            </div>
+        </section>
+        <section class="projects">
+            <h1>
+                <van-row>
+                    <van-col span="19">
+                        <span>项目经历</span>
+                    </van-col>
+                    <van-col span="5">
+                        <van-button class="opr-btn" size="mini" @click="addProject" :icon="addIcon" />
+                    </van-col>
+                </van-row>
+            </h1>
+            <div class="project-list" v-for="(project, index) in resumeProjects.listx" :key="index">
+                <van-row>
+                    <van-col span="19">
+                        <h2>{{project.projectName}}</h2>
+                        <p>{{project.projectType}}</p>
+                        <p><span>{{project.projectEntpName}}</span><span>-</span><span>{{project.projectPost}}</span></p>
+                        <p><span>{{project.startProjectTime}}</span><span>-</span><span>{{project.endProjectTime}}</span></p>
+                    </van-col>
+                    <van-col span="5">
+                        <van-button class="opr-btn" size="mini" @click="editProject(project.id)" :icon="editIcon" />
+                        <van-button class="opr-btn" size="mini" @click="delProject(project.id)" :icon="delIcon" />
+                    </van-col>
+                </van-row>
+                <h2>
+                    <span>项目说明</span>
+                </h2>
+                <p>
+                    {{project.projectDesc}}
+                </p>
             </div>
         </section>
         <section class="work-experience">
@@ -216,6 +239,9 @@ export default {
             },
             resumeAwards (state) {
                 return state.resume.resume.awards
+            },
+            resumeProjects (state) {
+                return state.resume.resume.projects
             }
         })
     },
@@ -225,7 +251,8 @@ export default {
             fetchResumeHope: resuemeType.FETCH_R_HOPE_INFO,
             fetchResumeEduexps: resuemeType.FETCH_R_EDUEXPS,
             fetchReusmeWorks: resuemeType.FETCH_R_WORKS,
-            fetchResumeAwards: resuemeType.FETCH_R_AWARDS
+            fetchResumeAwards: resuemeType.FETCH_R_AWARDS,
+            fetchResumeProjects: resuemeType.FETCH_R_PROJECT_EXPS
         }),
         getResumeBaseInfo(){
             this.fetchResumeBase()
@@ -249,6 +276,9 @@ export default {
         getResumeAwards(){
             this.fetchResumeAwards()
         },
+        getResumeProjects () {
+            this.fetchResumeProjects()
+        },
         onClickLeft(){
             this.$router.back()
         },
@@ -263,6 +293,25 @@ export default {
         },
         addEducation(){
             this.$router.push({ name: 'editResume', query: { title: '添加教育经历', id: null, isEducation: true}})
+        },
+        addProject() {
+            this.$router.push({ name: 'editResume', query: { title: '添加项目经历', id: null, isProject: true}})
+        },
+        editProject (id) {
+            this.$router.push({ name: 'editResume', query: { title: '编辑项目经历', id: id, isProject: true, isUpdate: true}})
+        },
+        delProject (id) {
+            Dialog.confirm({
+                title: '删除提醒',
+                message: '确认删除',
+            }).then(()=>{
+                resumeApi.delProjectExp(id).then( res =>{
+                    Toast.success(res.content)
+                    this.$store.dispatch(resuemeType.FETCH_R_PROJECT_EXPS)
+                })
+            }).catch(()=>{
+
+            })
         },
         editEducation(id){
             this.$router.push({ name: 'editResume', query: { title: '编辑教育经历', id: id, isEducation: true, isUpdate: true}})
@@ -293,7 +342,6 @@ export default {
             }).then(()=>{
                 resumeApi.deleteWorkExp(id).then( res =>{
                     Toast.success(res.content)
-                    console.log('删除成功了')
                     this.$store.dispatch(resuemeType.FETCH_R_WORKS)
                 })
             }).catch(()=>{
@@ -313,7 +361,6 @@ export default {
             }).then(()=>{
                 resumeApi.delAward(id).then( res =>{
                     Toast.success(res.content)
-                    console.log('删除成功了')
                     this.$store.dispatch(resuemeType.FETCH_R_AWARDS)
                 })
             }).catch(()=>{
@@ -346,6 +393,7 @@ export default {
         this.getResumeEduexps()
         this.getResumeWorks()
         this.getResumeAwards()
+        this.getResumeProjects()
     }
 }
 </script>
@@ -400,6 +448,7 @@ export default {
 .hope-infor,
 .personal-profile, 
 .education, 
+.projects,
 .work-experience,
 .awards
     width 90%
@@ -408,6 +457,7 @@ export default {
     background #ffffff
     border-radius 10px
     margin-top 10px
+.projects h1,
 .hope-infor h1,
 .personal-profile h1, 
 .education h1, 
@@ -419,6 +469,7 @@ export default {
 .hope-infor h1 span,
 .personal-profile h1 span, 
 .education h1 span, 
+.projects h1 span,
 .work-experience h1 span,
 .awards h1 span
     padding-left 10px
@@ -427,7 +478,7 @@ export default {
     font-size 14px
     line-height 16px
     padding 0 10px
-.education-list
+.education-list, .project-list
     margin-top 10px
 .education-list .school-pic
     width 80%
@@ -437,16 +488,16 @@ export default {
     width 100%
     height 100% 
     overflow hidden
-.education-list h2 
+.education-list h2, .project-list h2
     color #000000
     font-size 16px
     padding-left 15px
-.education-list p
+.education-list p, .project-list p
     padding-top 8px
     font-size 14px
     color #666666
     padding-left 15px
-.work-list h2 
+.work-list h2, .project-list h2
     color #000000
     font-size 14px
     line-height 24px

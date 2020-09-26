@@ -23,6 +23,12 @@ export default {
     async [type.FETCH_R_WORKS] (context) {
         let data = await resumeApi.workExpList()
         context.commit(type.FETCH_R_WORKS, data.content)
+        return data 
+    },
+
+    async [type.FETCH_R_PROJECT_EXPS] (context) {
+        let data = await resumeApi.getProjectExpList()
+        context.commit(type.FETCH_R_PROJECT_EXPS, data.content)
         return data
     },
 

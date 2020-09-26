@@ -30,7 +30,6 @@
                     label="选择出生年月"
                     placeholder="点击选择时间"
                     @click="onShowPicker('birthYear')"/>
-                <!-- <van-field v-model="resumeForm.heightEdu" name="heightEdu" label="最高学历" placeholder="请输入最高学历"></van-field> -->
                 <van-field
                     v-model="startWorkYear"
                     readonly
@@ -40,11 +39,6 @@
                     label="选择工作时间"
                     placeholder="点击选择时间"
                     @click="onShowPicker('startWorkYear')"/>
-                <!-- <van-field 
-                    v-model="resumeForm.livingCity" 
-                    name="livingCity" 
-                    label="居住城市" 
-                    placeholder="请输入居住城市" /> -->
                 <van-field
                     v-model="livingCity"
                     readonly
@@ -115,6 +109,58 @@
                     type="textarea" 
                     label="描述" 
                     placeholder="描述一下你自己" />
+            </van-cell-group>
+            <van-cell-group class="projrct-box" v-if="isProject">
+                <van-field 
+                    v-model="resumeForm.projectName" 
+                    name="projectName" 
+                    label="项目名称" 
+                    placeholder="请输入项目名称" />
+                <van-field 
+                    v-model="resumeForm.projectEntpName" 
+                    name="projectEntpName" 
+                    label="项目所在公司" 
+                    placeholder="请输入所在公司" />
+                <van-field
+                    v-model="projectType"
+                    readonly
+                    clickable
+                    label="项目类型" 
+                    name="projectType"
+                    :value="projectType"
+                    placeholder="选择项目类型"
+                    @click="onHopePicker('projectType')"/>
+                <van-field 
+                    v-model="resumeForm.projectPost" 
+                    name="projectPost" 
+                    label="所任职位" 
+                    placeholder="请输入所任职位" />
+                <van-field
+                    v-model="startProjectTime"
+                    readonly
+                    clickable
+                    name="startProjectTime"
+                    :value="startProjectTime"
+                    label="项目开始时间"
+                    placeholder="项目开始时间"
+                    @click="onShowPicker('startProjectTime')"/>
+                <van-field
+                    v-model="endProjectTime"
+                    readonly
+                    clickable
+                    name="endProjectTime"
+                    :value="endProjectTime"
+                    label="项目结束时间"
+                    placeholder="项目结束时间"
+                    @click="onShowPicker('endProjectTime')"/>
+                <van-field 
+                    v-model="resumeForm.projectDesc" 
+                    name="projectDesc" 
+                    rows="5" 
+                    autosize 
+                    type="textarea" 
+                    label="项目介绍" 
+                    placeholder="描述项目" />
             </van-cell-group>
             <van-cell-group class="education-box" v-if="isEducation">
                 <van-field 
@@ -275,6 +321,7 @@ export default {
             isEducation: this.$route.query.isEducation || false,
             isWork: this.$route.query.isWork || false,
             isAward: this.$route.query.isAward || false,
+            isProject: this.$route.query.isProject || false,
             leftIcon: require("common/image/home/lefticon.png"),
             timeName: '',
             birthValue: '',
@@ -282,7 +329,10 @@ export default {
             startWorkYear: '',
             startTime: '',
             endTime: '',
+            startProjectTime: '',
+            endProjectTime: '',
             adwardTime: '',
+            projectType: '',
             isLoadingShow: true,
             showPicker: false,
             showHopePicker: false,
@@ -308,6 +358,7 @@ export default {
             hopeSalares: ['2k-5k','6k-10k','11k-15k', '16k-20k','21k-30k','30k-40k','50k-70k'],
             education: '',
             educations: ['博士', '硕士', '研究生', '本科', '大专'],
+            projectTypes: ['社会实践经验', '项目经验', '科研经验'],
             expectCitys: '',
             areaList: '',
             livingCity: ''
@@ -346,8 +397,9 @@ export default {
                 return resumeApi.getWorkExp(this.id).then((res) =>{ return res })
             } else if (this.isAward) {
                 return resumeApi.getAward(this.id).then((res) =>{ return res })
+            } else if (this.isProject) {
+                return resumeApi.getProjectExp(this.id).then((res) => { return res})
             }
-            
         },
         updateInit(initFetchData){
             if (initFetchData.code === '200') {
@@ -384,6 +436,15 @@ export default {
                 if (initFetchData.content.livingCity) {
                     this.livingCity = initFetchData.content.livingCity 
                 }
+                if (initFetchData.content.projectType) {
+                    this.projectType = initFetchData.content.projectType 
+                }
+                if (initFetchData.content.startProjectTime) {
+                    this.startProjectTime = initFetchData.content.startProjectTime 
+                }
+                if (initFetchData.content.endProjectTime) {
+                    this.endProjectTime = initFetchData.content.endProjectTime 
+                }
                 
             }
             this.resumeForm = this._.merge({}, resumeUtil.BASE_FORM, initFetchData.content, {id: this.id})
@@ -391,78 +452,66 @@ export default {
         onClickLeft(){
             this.$router.back()
         },
-        onSubmit(value){
+        async onSubmit(value){
             this.resumeForm = this._.merge({}, value, {id: this.id})
             if(this.isUpdate){
                 if(this.isBaseInfo){
-                    resumeApi.editBaseMsg(this.resumeForm).then(() =>{
-                            Toast.success('编辑成功')
-                            this.$router.back()
-                        }).catch(() =>{
-                            Toast.fail('编辑失败')
-                        })
+                    let data = await resumeApi.editBaseMsg(this.resumeForm)
+                    this.editTip(data)
                 } else if (this.isHopeInfo) {
                     this.resumeForm.expectJobNature = this.expectJobNatureVal
-                    resumeApi.editHopeMsg(this.resumeForm).then(() =>{
-                            Toast.success('编辑成功')
-                            this.$router.back()
-                        }).catch(() =>{
-                            Toast.fail('编辑失败')
-                        })
+                    let data = await resumeApi.editHopeMsg(this.resumeForm)
+                    this.editTip(data)
                 } else if (this.isSelfEvaluation) {
-                    resumeApi.editSelfEvaluation(this.resumeForm).then(() =>{
-                            Toast.success('编辑成功')
-                            this.$router.back()
-                        }).catch(()=>{
-                            Toast.fail('编辑失败')
-                        })
+                    let data = await resumeApi.editSelfEvaluation(this.resumeForm)
+                    this.editTip(data)
                 } else if (this.isEducation) {
-                    resumeApi.editEduexp(this.resumeForm).then(()=>{
-                        Toast.success('编辑成功')
-                        this.$router.back()
-                    }).catch(()=>{
-                        Toast.fail('编辑失败')
-                    })
+                    let data = await resumeApi.editEduexp(this.resumeForm)
+                    this.editTip(data)
                 } else if (this.isWork) {
-                    resumeApi.editWorkExp(this.resumeForm).then(()=>{
-                        Toast.success('编辑成功')
-                        this.$router.back()
-                    }).catch(()=>{
-                        Toast.fail('编辑失败')
-                    })
+                    let data = await resumeApi.editWorkExp(this.resumeForm)
+                    this.editTip(data)
                 } else if (this.isAward) {
-                    resumeApi.editAward(this.resumeForm).then(()=>{
-                        Toast.success('编辑成功')
-                        this.$router.back()
-                    }).catch(()=>{
-                        Toast.fail('编辑失败')
-                    })
+                    let data = await resumeApi.editAward(this.resumeForm)
+                    this.editTip(data)
+                } else if (this.isProject) {
+                    this.resumeForm.projectType = this.projectType
+                    let data = await resumeApi.editProjectExp(this.resumeForm)
+                    this.editTip(data)
                 }
             } else {
                 if (this.isEducation) {
-                    resumeApi.addEduexp(this.resumeForm).then(()=>{
-                        Toast.success('添加成功')
-                        this.$router.back()
-                    }).catch(()=>{
-                        Toast.fail('添加失败')
-                    })
+                    let data = await resumeApi.addEduexp(this.resumeForm)
+                    this.addTip(data)
                 } else if (this.isWork) {
-                    resumeApi.addWorkExp(this.resumeForm).then(()=>{
-                        Toast.success('添加成功')
-                        this.$router.back()
-                    }).catch(()=>{
-                        Toast.fail('添加失败')
-                    })
+                    let data = await resumeApi.addWorkExp(this.resumeForm)
+                    this.addTip(data)
                 } else if (this.isAward) {
-                    resumeApi.addAward(this.resumeForm).then(()=>{
-                        Toast.success('添加成功')
-                        this.$router.back()
-                    }).catch(()=>{
-                        Toast.fail('添加失败')
-                    })
+                    let data = await resumeApi.addAward(this.resumeForm)
+                    this.addTip(data)
+                } else if (this.isProject) {
+                    this.resumeForm.projectType = this.projectType
+                    let data = await resumeApi.addProjectExp(this.resumeForm)
+                    this.addTip(data)
                 }
             }
             
+        },
+        addTip(data) {
+            if (data.code === '200') {
+                Toast.success('添加成功')
+                this.$router.back()
+            } else {
+                Toast.fail('添加失败')
+            }
+        },
+        editTip (data) {
+            if (data.code === '200') {
+                Toast.success('编辑成功')
+                this.$router.back()
+            } else {
+                Toast.fail('编辑失败')
+            }
         },
         // 显示弹窗
         showPopup () {
@@ -484,6 +533,9 @@ export default {
             if (this.pickerName === 'education') {
                 this.columns = this.educations
             }
+            if (this.pickerName === 'projectType') {
+                this.columns = this.projectTypes
+            }
 
         },
         onHopeCancel () {
@@ -496,14 +548,8 @@ export default {
                 this.expectJobNatureVal = val.value
                 this.showHopePicker = false
             }
-            if (this.pickerName === 'expectSalary') {
-               this[this.pickerName] = val
-               this.showHopePicker = false
-            }
-            if(this.pickerName === 'education') {
-                this[this.pickerName] = val
-                this.showHopePicker = false
-            }
+            this[this.pickerName] = val
+            this.showHopePicker = false
             
         },
         onCityPicker(name) {
@@ -519,7 +565,6 @@ export default {
             this.timeName = name
         },
         onConfirm (val) {
-            console.log('时间',val)
             let year = val.getFullYear()
             let month = val.getMonth() + 1
             let day = val.getDate()
@@ -532,9 +577,11 @@ export default {
             this.className = 'timeClass'
             // this.timeValue = `${year}-${month}-${day} ${hour}:${minute}`
             if(this.timeName === 'startTime') {
-                console.log('设置:结束时间不能小于开始时间')
+                //TO DO
+                // console.log('设置:结束时间不能小于开始时间')
             } else if (this.timeName === 'endTime') {
-                console.log('设置:开始时间不是大约结束时间')
+                //TO DO
+                // console.log('设置:开始时间不是大约结束时间')
             }
             this[this.timeName] = `${year}-${month}`
 
@@ -583,5 +630,4 @@ export default {
     color: #333;
 .van-field
     height auto
-
 </style>

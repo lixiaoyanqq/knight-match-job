@@ -101,7 +101,7 @@
         <van-col span="24">
           <div class="bar-echart">
             <div v-if="baseInfo.userType === '0'">
-              <bar-echart id="resume" width="100%" :tooltip="resumeTooltip" title="简历图谱" :typeValue="typeValue" :typeNames="typeNames"></bar-echart>
+              <bar-echart id="resume" width="100%" :tooltip="resumeTooltip" title="简历分析(10分制)" :typeValue="typeValue" :typeNames="typeNames"></bar-echart>
             </div>
             <div v-if="baseInfo.userType === '1'">
               <bar-echart id="company" width="100%" :tooltip="compTooltip" title="公司图谱" :typeValue="compTypeValues" :typeNames="compTypeName"></bar-echart>

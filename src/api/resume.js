@@ -161,6 +161,55 @@ export function deleteWorkExp(id){
     })
 }
 
+//获取项目经历列表
+export function getProjectExpList() {
+    return fetch({
+        url: 'amj/proexp/list',
+        method: 'post',
+        data: {
+            pageNum: '1',
+            pageSize: '10'
+        }
+    })
+}
+
+//添加项目经历
+export function addProjectExp(data) {
+    return fetch({
+        url: 'amj/proexp/save',
+        method: 'post',
+        data: data
+    })
+}
+
+//编辑项目经历
+export function editProjectExp(data) {
+    return fetch({
+        url: 'amj/proexp/update',
+        method: 'post',
+        data: data
+    })
+}
+
+//查看项目经历
+export function getProjectExp(id) {
+    return fetch({
+        url: `amj/proexp/get/${id}`,
+        method: 'get'
+    })
+}
+
+//删除项目经历
+export function delProjectExp(id) {
+    return fetch({
+        url: 'amj/proexp/del',
+        method: 'post',
+        data: {
+            id: id
+        }
+    })
+}
+
 //获取经理证书列表
 export function awardList(){
     return fetch({

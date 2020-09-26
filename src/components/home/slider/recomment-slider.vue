@@ -212,6 +212,7 @@ export default {
 .hotTit
     display inline-block
     position relative
+    margin-top 10px
     top -7px
     left 20px
     font-size 16px
