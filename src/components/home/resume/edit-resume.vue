@@ -624,6 +624,7 @@ export default {
     bottom: 0;
     background-color: #f5f5f5;
     z-index: 199;
+    overflow-y scroll
 .van-form
     margin-top 4rem
 .timeClass
