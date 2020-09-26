@@ -13,15 +13,16 @@
         <section class="pos-manage-list">
             <div class="manage-header">
                 <van-row>
-                    <van-col span="22">
+                    <van-col span="20">
                         <span>发布的职位</span> 
                     </van-col>
-                    <van-col span="2">
+                    <van-col span="4">
+                        <van-button class="opr-btn" @click="replayPosition" size="mini" icon="replay" type="default" />
                         <van-button class="opr-btn" @click="openPosition" size="mini" icon="plus" type="default" />
                     </van-col>
                 </van-row>
             </div>
-            <div class="manage-card" v-for="(post, index) in postList.listx" :key="index">
+            <div class="manage-card" v-loading="loading" v-for="(post, index) in postList.listx" :key="index">
                 <h1 @click="onEdit(post)">{{post.postName || '-'}}</h1>
                 <ul>
                     <li>{{post.postSalary || '-'}}</li>
@@ -30,12 +31,15 @@
                 </ul>
                 <ul>
                     <li>{{post.flashTime || '-'}}</li>
-                    <li>{{post.recordStatus === '0' ? '已截止' : '招聘中' || '-'}}</li>
+                    <li>
+                        <van-tag round color="#ffe1e1" text-color="#ad0000">{{post.publishStatus === '0' ? '已截止' : '招聘中' || '-'}}</van-tag>
+                    </li>
                 </ul>
                 <van-row type="flex">
-                    <van-col offset="16">
-                        <van-button type="primary" size="mini" @click="onPushOrDown(post)">下线</van-button>
-                        <van-button type="primary" size="mini">刷新</van-button>
+                    <van-col offset="20">
+                        <van-button round type="primary" style="padding:0 10px" color="linear-gradient(to right, #2739c8, #f51e67)" size="mini" @click="onPushOrDown(post)">
+                            {{post.publishStatus === '0' ? '上线' : '下线'}}
+                        </van-button>
                     </van-col>
                 </van-row>
             </div>
@@ -43,6 +47,7 @@
     </div>
 </template>
 <script>
+import store from 'store'
 import * as type from 'store/home/mutations_types'
 import * as homeApi from 'api/home'
 import { mapState, mapActions } from 'vuex'
@@ -50,6 +55,7 @@ import { Toast, Dialog } from 'vant'
 export default {
     data () {
         return {
+            loading: false,
             leftIcon: require("common/image/home/lefticon.png"),
         }
     },
@@ -76,25 +82,28 @@ export default {
         onPushOrDown(event){
             let paramObj = {
                 id: event.id,
-                publishStatus: event.recordStatus
+                publishStatus: event.publishStatus
             }
             let message = paramObj.publishStatus === '0' ? '确定要上线该职位么' : '确定下线该职位么'
             Dialog.confirm({
                 title: '操作提示',
                 message: message,
             }).then(() => {
-                console.log('121212')
                 homeApi.switchPublish(paramObj)
+                store.dispatch(type.FETCH_POSITION)
             }).catch(()=>{
 
             })
         },
         openPosition () {
             this.$router.push({ name: 'openPosition' })
+        },
+        replayPosition() {
+            store.dispatch(type.FETCH_POSITION)
         }
     },
     mounted () {
-        this.fetchPostList()
+        this.getPostList()
     }
 }
 </script>
