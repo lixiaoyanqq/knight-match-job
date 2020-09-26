@@ -32,8 +32,16 @@
                     <van-field v-model="compForm.entpSimpleName" name="entpSimpleName" placeholder="请输入公司简称" />
                 </van-cell-group>
                 <van-cell-group>
-                    <label class="form-label" for="">公司公司所在地</label>
-                    <van-field v-model="compForm.city" name="city" placeholder="请输入公司所在地" />
+                    <label class="form-label" for="">公司所在地</label>
+                    <!-- <van-field v-model="compForm.city" name="city" placeholder="请输入公司所在地" /> -->
+                    <van-field
+                        v-model="city"
+                        readonly
+                        clickable
+                        name="city"
+                        :value="city"
+                        placeholder="公司所在地"
+                        @click="onCityPicker('city')"/>
                 </van-cell-group>
                 <van-cell-group>
                     <label class="form-label" for="">详细地址</label>
@@ -101,6 +109,14 @@
                 @confirm="onPersonScopes"
                 @cancel="showPersonScope = false"/>
         </van-popup>
+        <van-popup v-model="showCityPicker" round position="bottom">
+            <van-area 
+                title="选择期望城市" 
+                :area-list="areaList" 
+                :columns-num="3" 
+                @cancel="showCityPicker = false"
+                @confirm="onCityConfirm"/>
+        </van-popup>
     </div>
 </template>
 <script>
@@ -110,12 +126,14 @@ import { mapState, mapActions, mapMutations } from 'vuex'
 import _ from 'lodash'
 import { Toast } from 'vant'
 import { BASE_URL } from 'api/config'
+import areaData from "utils/area"
 export default {
     data () {
         return {
             deletable: false,
             showEntpType: false,
             showPersonScope: false,
+            showCityPicker: false,
             select: '',
             entpType: '',
             personScope: '',
@@ -132,7 +150,10 @@ export default {
                 entpInfo: ''
             },
             entpTypes: ['国企','外企','民营','合资','股份制公司','创业公司','上市公司','国家机关','事业单位','其他'],
-            personScopes: ['20人以下','20-99人','100-499人','500-999人','1000-9999人','10000人以上']
+            personScopes: ['20人以下','20-99人','100-499人','500-999人','1000-9999人','10000人以上'],
+            areaList: '',
+            cityPickerName: '',
+            city: ''
         }
     },
     computed: {
@@ -151,10 +172,10 @@ export default {
             this.fetchCompDesc().then(res => {
             //    console.log('res111',res.content)
                this.compForm = this._.merge({}, res.content)
+               this.city = this.compForm.city
                if (this.compForm.id) {
                     this.entpType = this.entpTypes[Number(this.compForm.entpType) -1]
                     this.personScope = this.personScopes[Number((this.compForm.personScope).substring(1)) -1]
-                    console.log('this.compForm',this.compForm)
                     if (this.compForm.entpLogo) {
                         let logUrl ={
                             url: `${BASE_URL}${this.compForm.entpLogo}`
@@ -166,19 +187,8 @@ export default {
                         }
                         this.uploader.push(logUrl)
                     }
-               } else {
-                //    console.log('初始化头像')
-                //    let difaultPic = {
-                //         // url: require("common/image/home/default-avatar.jpeg")
-                //         url: require("common/image/personal/user-head.png")
-                //    }
-                //    this.uploader.push(difaultPic)
                }
-               
-            //    console.log('this.entpType',this.entpType)
-            //    console.log('this.personScope',this.personScope)
             })
-            console.log('this.uploader',this.uploader)
         },
         onClickLeft(){
             this.$router.back()
@@ -235,10 +245,23 @@ export default {
         onPersonScopes(value, index){
            this.showPersonScope = false
             this.personScope = value
+        },
+        onCityPicker(name) {
+            this.showCityPicker = true
+            this.cityPickerName = name
+        },
+        onCityConfirm (val) {
+            let cityAddress = val[0].name + val[1].name + val[2].name
+            this[this.cityPickerName] = cityAddress
+            this.showCityPicker = false
+        },
+        getAllCity () {
+            this.areaList = areaData
         }
     },
     mounted () {
         this.getCompDesc()
+        this.getAllCity()
     }
 }
 </script>

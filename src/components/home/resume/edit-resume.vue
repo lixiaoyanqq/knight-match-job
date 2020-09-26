@@ -40,11 +40,20 @@
                     label="选择工作时间"
                     placeholder="点击选择时间"
                     @click="onShowPicker('startWorkYear')"/>
-                <van-field 
+                <!-- <van-field 
                     v-model="resumeForm.livingCity" 
                     name="livingCity" 
                     label="居住城市" 
-                    placeholder="请输入居住城市" />
+                    placeholder="请输入居住城市" /> -->
+                <van-field
+                    v-model="livingCity"
+                    readonly
+                    clickable
+                    label="居住城市" 
+                    name="livingCity"
+                    :value="livingCity"
+                    placeholder="居住城市"
+                    @click="onCityPicker('livingCity')"/>
                 <van-field 
                     v-model="resumeForm.userMobile" 
                     name="userMobile" 
@@ -59,11 +68,6 @@
                     :rules="email_rule" />
             </van-cell-group>
             <van-cell-group class="base-info-group" v-if="isHopeInfo">
-                <!-- <van-field 
-                    v-model="resumeForm.expectCitys" 
-                    name="expectCitys" 
-                    label="期望城市" 
-                    placeholder="请输入期望的工作城市" /> -->
                 <van-field
                     v-model="expectCitys"
                     readonly
@@ -72,7 +76,7 @@
                     name="expectCitys"
                     :value="expectCitys"
                     placeholder="期望城市"
-                    @click="showCityPicker = true"/>
+                    @click="onCityPicker('expectCitys')"/>
                 <van-field
                     v-model="expectJobNature"
                     readonly
@@ -123,11 +127,6 @@
                     name="proName" 
                     label="专业" 
                     placeholder="请输入专业" />
-                <!-- <van-field 
-                    v-model="resumeForm.education" 
-                    name="education" 
-                    label="学历" 
-                    placeholder="请输入学历" /> -->
                 <van-field
                     v-model="education"
                     readonly
@@ -296,6 +295,7 @@ export default {
             email_rule: [{ pattern: /^[A-Za-z0-9]+([_\.][A-Za-z0-9]+)*@([A-Za-z0-9\-]+\.)+[A-Za-z]{2,6}$/, message: '输入正确的邮箱号'}],
             resumeForm: this._.merge({}, resumeUtil.BASE_FORM),
             pickerName: '',
+            cityPickerName: '',
             columns: [],
             expectJobNature: '',
             expectJobNatureVal: '',
@@ -309,7 +309,8 @@ export default {
             education: '',
             educations: ['博士', '硕士', '研究生', '本科', '大专'],
             expectCitys: '',
-            areaList: ''
+            areaList: '',
+            livingCity: ''
         }
     },
     computed: {
@@ -327,7 +328,6 @@ export default {
             this.fetchBaseInfo()
         },
         init(){
-            console.log('城市',areaData)
             this.areaList = areaData
             if(this.isUpdate){
                 this.updataInitFetch().then( res => { this.updateInit(res)})
@@ -380,6 +380,9 @@ export default {
                 }
                 if (initFetchData.content.expectCitys) {
                    this.expectCitys = initFetchData.content.expectCitys 
+                }
+                if (initFetchData.content.livingCity) {
+                    this.livingCity = initFetchData.content.livingCity 
                 }
                 
             }
@@ -503,9 +506,12 @@ export default {
             }
             
         },
+        onCityPicker(name) {
+            this.showCityPicker = true
+            this.cityPickerName = name
+        },
         onCityConfirm (val) {
-            console.log('城市',val[1].name)
-            this.expectCitys = val[1].name
+            this[this.cityPickerName] = val[1].name
             this.showCityPicker = false
         },
         onShowPicker(name){
