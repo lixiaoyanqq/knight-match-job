@@ -21,7 +21,7 @@
             <van-cell-group>
               <van-cell :title="baseInfo.userType === '0' ? dashboard.seeNum || '0' : dashboard.postNum || '0'" :value="baseInfo.userType === '0' ? '被看' : '个职位'" :icon="lookIcon"/>
               <van-cell :title="baseInfo.userType === '0' ? dashboard.over || '0' : dashboard.deliverNum || '0'" :value="baseInfo.userType === '0' ? '超过' : '个投递'" :icon="moreIcon"/>
-              <van-cell :title="baseInfo.userType === '0' ? typeNames.length || '0' : dashboard.favoriteNum || '0'" :value="baseInfo.userType === '0' ? '方面' : '想加入'" :icon="typeIcon"/>
+              <van-cell :title="baseInfo.userType === '0' ? typeNames.length || '0' : dashboard.favoriteNum || '0'" :value="baseInfo.userType === '0' ? '被收藏' : '想加入'" :icon="typeIcon"/>
             </van-cell-group>
           </div>
         </van-col>
@@ -127,7 +127,7 @@
         </van-col>
         <van-col span="8">
             <div class="view-main">
-                <h1>{{baseInfo.userType === '0' ? '匹配岗位' : '学历匹配'}}</h1>
+                <h1>{{baseInfo.userType === '0' ? '推荐职位' : '学历匹配'}}</h1>
                 <van-slider disabled v-model="sliderBtn" bar-height="8px" class="slider-box1" active-color="-webkit-gradient(linear, 0 0, 100% 100%, from(#f86e98), to(#fbcadb))">
                     <template #button>
                         <div class="custom-button">
@@ -135,7 +135,7 @@
                         </div>
                     </template>
                 </van-slider>
-                <p class="view-value">{{baseInfo.userType === '0' ? '100+' : dashboard.edus || '-'}}</p>
+                <p class="view-value">{{baseInfo.userType === '0' ? dashboard.bestPosts : dashboard.edus || '-'}}</p>
             </div>
         </van-col>
         <van-col span="8">
@@ -231,6 +231,7 @@ export default {
         let data = await dashboardApi.getDashboard()
         if(data && data.content){
           this.dashboard = data.content
+          console.log('this.dashboard',this.dashboard)
           if (data.content.perfection === null) {
             this.isLogin = false
           } else {

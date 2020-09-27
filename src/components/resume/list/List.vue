@@ -69,7 +69,6 @@ export default {
             fetchResumes: resumeType.FETCH_RESUMES
         }),
         getResumes () {
-            console.log('newResumes',this.newResumes)
             this.fetchResumes()
         },
         onChange(value){

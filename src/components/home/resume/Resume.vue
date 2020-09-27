@@ -102,6 +102,7 @@
                 <p>
                     {{project.projectDesc}}
                 </p>
+                <van-divider />
             </div>
         </section>
         <section class="work-experience">

@@ -10,15 +10,6 @@
                 <van-icon :name="leftIcon" size="20" />
             </template>
         </van-nav-bar>
-        <!-- <section class="desc-swipe">
-            <van-swipe class="my-swipe" :width="'100%'" :height="200" :autoplay="3000" indicator-color="white">
-                <van-swipe-item v-for="(image, index) in images" :key="index">
-                    <div class="resume-pic">
-                        <van-image :src="image" />
-                    </div>
-                </van-swipe-item>
-            </van-swipe>
-        </section> -->
         <section class="company-logo">
             <div class="head-portrait">
               <img :src="userHead" />
@@ -62,17 +53,38 @@
             </h1>
             <div class="education-list" v-for="(eduexp, index) in resuemEduexps" :key="index">
                 <van-row>
-                    <!-- <van-col span="8">
-                        <div class="school-pic">
-                            <van-image :src="eduexp.schoolImg || schoolImg"/>
-                        </div>
-                    </van-col> -->
                     <van-col span="24">
                         <h2>{{eduexp.schoolName}}</h2>
                         <p><span>{{eduexp.education}}</span><span>-</span><span>{{eduexp.proName}}</span></p>
                         <p><span>{{eduexp.startTime}}</span><span>-</span><span>{{eduexp.endTime}}</span></p>
                     </van-col>
                 </van-row>
+            </div>
+        </section>
+        <section class="projects">
+            <h1>
+                <van-row>
+                    <van-col span="24">
+                        <span>项目经历</span>
+                    </van-col>
+                </van-row>
+            </h1>
+            <div class="project-list" v-for="(project, index) in resumeProjectExp" :key="index">
+                <van-row>
+                    <van-col span="24">
+                        <h2>{{project.projectName}}</h2>
+                        <p>{{project.projectType}}</p>
+                        <p><span>{{project.projectEntpName}}</span><span>-</span><span>{{project.projectPost}}</span></p>
+                        <p><span>{{project.startProjectTime}}</span><span>-</span><span>{{project.endProjectTime}}</span></p>
+                    </van-col>
+                </van-row>
+                <h2>
+                    <span>项目说明</span>
+                </h2>
+                <p>
+                    {{project.projectDesc}}
+                </p>
+                <van-divider />
             </div>
         </section>
         <section class="work-experience">
@@ -224,6 +236,7 @@ export default {
             } 
         },
         initData(data){
+            console.log('data',data)
             this.resemeBaseInfo = data.resumeBaseInfoDto
             if(this.resemeBaseInfo.userHeadPic) {
                 this.userHead = `${BASE_URL}${this.resemeBaseInfo.userHeadPic}`
@@ -308,7 +321,8 @@ export default {
 .opr-btn .van-icon
     font-size 20px
 .personal-profile, 
-.education, 
+.education,
+.projects,
 .work-experience,
 .awards
     width 90%
@@ -318,14 +332,16 @@ export default {
     border-radius 10px
     margin-top 10px
 .personal-profile h1, 
-.education h1, 
+.education h1,
+.projects h1, 
 .work-experience h1,
 .awards h1
     height 24px
     line-height 24px
     color #000000
 .personal-profile h1 span, 
-.education h1 span, 
+.education h1 span,
+.projects h1 span, 
 .work-experience h1 span,
 .awards h1 span
     padding-left 10px
@@ -334,7 +350,7 @@ export default {
     font-size 14px
     line-height 16px
     padding 0 10px
-.education-list
+.education-list, .project-list
     margin-top 10px
 .education-list .school-pic
     width 80%
@@ -344,16 +360,16 @@ export default {
     width 100%
     height 100% 
     overflow hidden
-.education-list h2 
+.education-list h2 , .project-list h2
     color #000000
     font-size 16px
     padding-left 15px
-.education-list p
+.education-list p, .project-list p
     padding-left 15px
     padding-top 8px
     font-size 14px
     color #666666
-.work-list h2 
+.work-list h2 ,.project-list h2
     color #000000
     font-size 14px
     line-height 24px
