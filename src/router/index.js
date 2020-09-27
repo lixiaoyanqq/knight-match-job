@@ -1,8 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
+
 // 引入一级组件
 import Dashboard from 'components/dashboard/Dashboard'
+//引导页
+const GuidePage = () => import('components/guide-page/index')
 
 // 懒加载二级组件 Tarbar
 const Home = () => import('components/home/list/List')
@@ -50,6 +53,12 @@ export const constantRouterMap =  [
       path: '/login',
       name: 'login',
       component: Login
+    },
+    {
+      //引导页
+      path: '/guide',
+      name: 'guide',
+      component: GuidePage
     },
     {
       path: '/',

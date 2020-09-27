@@ -57,15 +57,14 @@
             <h1>公司福利</h1>
             <van-tag v-for="(postAllure, index) in postAllures" :key="index" :color="postAllure.color" type="danger" size="large">{{postAllure.name}}</van-tag>
         </section>
-        <section class="pos-desc">
+        <!-- <section class="pos-desc">
             <h1>职位介绍</h1>
             <ul>
                 <li v-for="(postDemand, index) in postDemands" :key="index">
-                    <!-- <span>{{index + 1}}、</span> -->
                     <span>{{postDemand}}</span>
                 </li>
             </ul>
-        </section>
+        </section> -->
         <section class="opera-btns">
             <van-row>
                 <!-- <van-col span="0">

@@ -203,17 +203,24 @@ export default {
             console.log('校验失败哎',errorInfo)
         },
         async onLoginSubmit(values){
-            try {
-                let data = await this.login(values)
-                this.$router.push({ path: '/' })
-            } catch (error) {
+            let data = await this.login(values)
+            if(data.code === '200') {
+                if (data.content.baseInfo.guildStatus) {
+                    this.$router.push({ name: 'guide' })
+                } else {
+                    this.$router.push({ path: '/' })
+                }
+            } else if (data.code === '0001') {
                 Toast({
-                    message: '用户名密码错误，或者未注册',
-                    duration: 1000
+                    message: '用户未注册，请先注册',
+                    duration: 2000
+                });
+            } else if (data.code === '0003') {
+                Toast({
+                    message: '用户名或密码错误，请重新输入',
+                    duration: 2000
                 });
             }
-            
-            
         },
         onRegisterFailed(errorInfo){
             console.log('注册校验失败哎',errorInfo)
@@ -221,9 +228,7 @@ export default {
         async onRegisterSubmit(){
             this.$refs.registerForm.resetValidation()
             if (this.isForget) {
-                console.log('忘记密码')
                 let data = await userApi.forgetPassword(this.registerForm)
-                console.log('data',data)
                 if (data.code === '200') {
                     Toast.success('重置密码成功，请直接登录')
                     this.active = 0
@@ -240,7 +245,6 @@ export default {
             
             if (this.isRegister) {
                 let data = await this.register(this.registerForm)
-                console.log('data',data)
                 if (data && data.code === '200') {
                     Toast.success('注册成功，请直接登录')
                     this.$refs.registerForm.resetValidation()
@@ -258,36 +262,6 @@ export default {
                     this.$refs.registerForm.resetValidation()
                     // this.resetForm()
                 }
-                // try {
-                    // let data = await this.register(this.registerForm)
-                    // console.log('data',data)
-                    // if(data.code === '200') {
-                    //     Toast.success('注册成功，请直接登录')
-                    //     this.active = 0
-                    //     this.loginForm.mobile = this.registerForm.mobile
-                    //     this.loginForm.password = this.registerForm.password
-                    //     this.$refs.registerForm.resetValidation()
-                    // } else if (data.code === '0002') {
-                    //     Toast('该账号已注册，请直接登录')
-                    //     this.active = 0
-                    //     this.$refs.registerForm.resetValidation()
-                    //     this.resetForm()
-                    // } else {
-                    //     Toast.fail('注册失败，请重新注册')
-                    //     this.$refs.registerForm.resetValidation()
-                    //     this.resetForm()
-                    // }
-                
-                // } catch (error) {
-                    // console.log('error',error)
-                    // Toast({
-                    //     message: '注册失败，或该手机号已经注册，请直接登录',
-                    //     duration: 3000
-                    // })
-                    // this.active = 0
-                    // this.$refs.registerForm.resetValidation()
-                    // this.resetForm()
-                // }
             }
         },
         onBlue(){
@@ -329,7 +303,7 @@ export default {
                 this.resetForm()
             } else if (this.active === 1 && this.isForget === false) {
                 this.isRegister = true
-                this.registerForm.mobile = this.loginForm.mobile
+                // this.registerForm.mobile = this.loginForm.mobile
             }
         },
         onForgetPassword () {

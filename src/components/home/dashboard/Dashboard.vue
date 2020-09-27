@@ -114,7 +114,7 @@
     <van-row>
         <van-col span="8">
             <div class="view-main">
-                <h1>{{baseInfo.userType === '0' ? '薪酬范围' : '高度匹配'}}</h1>
+                <h1>{{baseInfo.userType === '0' ? '期望薪资' : '薪酬范围'}}</h1>
                 <van-slider disabled v-model="sliderBtn" bar-height="8px" class="slider-box0" active-color="-webkit-gradient(linear, 0 0, 100% 100%, from(#87a0ef), to(#b2bff3))">
                     <template #button>
                         <div class="custom-button">

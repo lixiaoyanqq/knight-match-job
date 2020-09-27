@@ -264,3 +264,12 @@ export function doNotFit (id) {
         }
     })
 }
+
+//引导表单
+export function talentGuide(data) {
+    return fetch({
+        url: 'amj/resume/updateMyExpect',
+        method: 'post',
+        data: data
+    })
+}

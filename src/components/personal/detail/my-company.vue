@@ -33,7 +33,6 @@
                 </van-cell-group>
                 <van-cell-group>
                     <label class="form-label" for="">公司所在地</label>
-                    <!-- <van-field v-model="compForm.city" name="city" placeholder="请输入公司所在地" /> -->
                     <van-field
                         v-model="city"
                         readonly
@@ -49,9 +48,6 @@
                 </van-cell-group>
                 <van-cell-group>
                     <label class="form-label" for="">公司类型</label>
-                    <!-- <van-dropdown-menu>
-                        <van-dropdown-item v-model="compForm.entpType" name="entpType" :options="entpTypes" />
-                    </van-dropdown-menu> -->
                     <van-field
                         v-model="entpType" 
                         readonly
@@ -59,13 +55,10 @@
                         name="entpType"
                         :value="entpType"
                         placeholder="公司类型"
-                        @click="showEntpType = true"/>
+                        @click="onShowPicker('entpType')"/>
                 </van-cell-group>
                 <van-cell-group>
                     <label class="form-label" for="">公司规模</label>
-                    <!-- <van-dropdown-menu>
-                        <van-dropdown-item v-model="compForm.personScope" name="personScope" :options="personScopes" />
-                    </van-dropdown-menu> -->
                     <van-field
                         v-model="personScope" 
                         readonly
@@ -73,11 +66,19 @@
                         name="personScope"
                         :value="personScope"
                         placeholder="公司规模"
-                        @click="showPersonScope = true"/>
+                        @click="onShowPicker('personScope')"/>
                 </van-cell-group>
                 <van-cell-group>
-                    <label class="form-label" for="">公司性质</label>
-                    <van-field v-model="compForm.industry" name="industry" placeholder="公司性质" />
+                    <label class="form-label" for="">所属领域</label>
+                    <!-- <van-field v-model="compForm.industry" name="industry" placeholder="公司性质" /> -->
+                    <van-field
+                        v-model="industry" 
+                        readonly
+                        clickable
+                        name="industry"
+                        :value="industry"
+                        placeholder="所属领域"
+                        @click="onShowPicker('industry')"/>
                 </van-cell-group>
                 <van-cell-group class="company-intro">
                     <label class="form-label" for="">公司介绍</label>
@@ -95,19 +96,12 @@
                 </div>
             </van-form>
         </section>
-        <van-popup round v-model="showEntpType" position="bottom">
+        <van-popup round v-model="showPicker" position="bottom">
             <van-picker
                 show-toolbar
-                :columns="entpTypes"
-                @confirm="onEntpType"
-                @cancel="showEntpType = false"/>
-        </van-popup>
-        <van-popup round v-model="showPersonScope" position="bottom">
-            <van-picker
-                show-toolbar
-                :columns="personScopes"
-                @confirm="onPersonScopes"
-                @cancel="showPersonScope = false"/>
+                :columns="columns"
+                @cancel="showPicker = false"
+                @confirm="onConfirm"/>
         </van-popup>
         <van-popup v-model="showCityPicker" round position="bottom">
             <van-area 
@@ -134,6 +128,7 @@ export default {
             showEntpType: false,
             showPersonScope: false,
             showCityPicker: false,
+            showPicker: false,
             select: '',
             entpType: '',
             personScope: '',
@@ -152,8 +147,11 @@ export default {
             entpTypes: ['国企','外企','民营','合资','股份制公司','创业公司','上市公司','国家机关','事业单位','其他'],
             personScopes: ['20人以下','20-99人','100-499人','500-999人','1000-9999人','10000人以上'],
             areaList: '',
-            cityPickerName: '',
-            city: ''
+            pickerName: '',
+            city: '',
+            columns: [],
+            industry: '',
+            industries: ['互联网/IT/电子/通讯','房地产','金融业','建筑业','制造业','农林牧渔','批发/零售/贸易','专业服务','文化/体育/娱乐','交通运输/仓储/物流','能源/环保/矿产','教育培训/科研','卫生及社会工作','公共管理/社会保障','生活服务'],
         }
     },
     computed: {
@@ -172,10 +170,13 @@ export default {
             this.fetchCompDesc().then(res => {
             //    console.log('res111',res.content)
                this.compForm = this._.merge({}, res.content)
-               this.city = this.compForm.city
                if (this.compForm.id) {
+                   this.city = this.compForm.city
+                   this.industry = this.compForm.industry
                     this.entpType = this.entpTypes[Number(this.compForm.entpType) -1]
-                    this.personScope = this.personScopes[Number((this.compForm.personScope).substring(1)) -1]
+                    if (this.compForm.personScope) {
+                        this.personScope = this.personScopes[Number((this.compForm.personScope).substring(1)) -1]
+                    }
                     if (this.compForm.entpLogo) {
                         let logUrl ={
                             url: `${BASE_URL}${this.compForm.entpLogo}`
@@ -238,17 +239,20 @@ export default {
         onEntpChange(){
             Toast('取消');
         },
-        onEntpType(value, index){
-            this.showEntpType = false
-            this.entpType = value
+        onShowPicker(name) {
+            this.pickerName = name
+            this.showPicker = true
+            if (this.pickerName === 'industry') {
+                this.columns = this.industries
+            } else if (this.pickerName === 'entpType') {
+                this.columns = this.entpTypes
+            } else if (this.pickerName === 'personScope') {
+                this.columns = this.personScopes
+            }
         },
-        onPersonScopes(value, index){
-           this.showPersonScope = false
-            this.personScope = value
-        },
-        onCityPicker(name) {
-            this.showCityPicker = true
-            this.cityPickerName = name
+        onConfirm(val) {
+            this[this.pickerName] = val
+            this.showPicker = false
         },
         onCityConfirm (val) {
             let cityAddress = val[0].name + val[1].name + val[2].name

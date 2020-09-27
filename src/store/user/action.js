@@ -4,8 +4,11 @@ import * as user from 'api/user'
 export default {
     async [type.LOGIN] (context, playload = {}) {
         let data = await user.login(playload)
-        context.commit(type.SET_TOKEN, data.content.token)
-        context.commit(type.SET_BADE_INFO, data.content.baseInfo)
+        console.log('data',data)
+        if (data.code === '200') {
+            context.commit(type.SET_TOKEN, data.content.token)
+            context.commit(type.SET_BADE_INFO, data.content.baseInfo)
+        }
         return data
     },
 
