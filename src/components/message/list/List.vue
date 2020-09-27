@@ -4,11 +4,15 @@
             <van-tab title="投递信息" name="sendMsg">
                 <div class="message-list" v-if="messages.length > 0">
                     <van-list>
-                        <van-cell 
-                            v-for="msg in messages" 
-                            :key="msg.id" 
-                            :title="msg.mesTitle" 
-                            :value="msg.mesContent" />
+                        <p v-for="msg in messages" :key="msg.id">
+                            <van-row>
+                                <van-col span="12">{{msg.mesTitle}}</van-col>
+                                <van-col span="12">{{msg.createTime}}</van-col>
+                            </van-row>
+                            <van-row>
+                                <span>{{msg.mesContent}}</span>
+                            </van-row>
+                        </p>
                     </van-list>
                 </div>
                 <van-empty v-else description="暂时还没投递信息哦" />
@@ -48,6 +52,7 @@ export default {
             let data = await msgApi.getMessages(this.userInfo.userType)
             if (data.code === '200') {
                 this.messages = data.content.listx
+                console.log('this.messages',this.messages)
             }
         }
     },
@@ -57,7 +62,14 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
-.message-list .van-list .van-cell
-    background rgba(0,0,0,0)
-    padding 10px 35px
+.message-list
+    width 90%
+    margin 15px auto
+    color #000000
+.message-list p 
+    line-height 24px
+    font-size 14px
+.message-list span 
+    font-size 12px
+    color #969799
 </style>

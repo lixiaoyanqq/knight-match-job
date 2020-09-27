@@ -21,7 +21,7 @@
             <van-cell-group>
               <van-cell :title="baseInfo.userType === '0' ? dashboard.seeNum || '0' : dashboard.postNum || '0'" :value="baseInfo.userType === '0' ? '被看' : '个职位'" :icon="lookIcon"/>
               <van-cell :title="baseInfo.userType === '0' ? dashboard.over || '0' : dashboard.deliverNum || '0'" :value="baseInfo.userType === '0' ? '超过' : '个投递'" :icon="moreIcon"/>
-              <van-cell :title="baseInfo.userType === '0' ? typeNames.length || '0' : dashboard.favoriteNum || '0'" :value="baseInfo.userType === '0' ? '被收藏' : '想加入'" :icon="typeIcon"/>
+              <van-cell :title="baseInfo.userType === '0' ? dashboard.focus || '0' : dashboard.favoriteNum || '0'" :value="baseInfo.userType === '0' ? '被收藏' : '想加入'" :icon="typeIcon"/>
             </van-cell-group>
           </div>
         </van-col>
@@ -248,6 +248,7 @@ export default {
         let data =  await dashboardApi.getCompDashboard()
         if(data && data.content && data.code === '200'){
           this.dashboard = data.content
+          console.log('we',this.dashboard)
           this.enterviewRate = Number(data.content.enterviewRate)
           this.entryRate = Number(data.content.entryRate)
           this.postArray = data.content.postArray
