@@ -137,3 +137,17 @@ export function keySearchPosition(data) {
         }
     })
 }
+
+//留言反馈列表
+export function feedbackList (data) {
+    return fetch({
+        url: 'amj/inter/comm/listWithReply',
+        method: 'post',
+        data: {
+            resId: '1',
+            resType: '3',
+            pageNum: data.pageNum,
+            pageSize: data.pageSize
+        }
+    })
+}

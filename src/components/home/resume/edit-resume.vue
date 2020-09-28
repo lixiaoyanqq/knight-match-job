@@ -547,9 +547,11 @@ export default {
                 this[this.pickerName] = val.text
                 this.expectJobNatureVal = val.value
                 this.showHopePicker = false
+            } else {
+                this[this.pickerName] = val
+                this.showHopePicker = false
             }
-            this[this.pickerName] = val
-            this.showHopePicker = false
+            
             
         },
         onCityPicker(name) {

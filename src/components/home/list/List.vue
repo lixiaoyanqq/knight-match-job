@@ -18,20 +18,57 @@
     <card-list/>
     <card-footer />
     <!-- 反馈建议 -->
-    <van-action-sheet @cancel="onCancel" v-model="feedback" title="意见反馈">
+    <van-action-sheet @cancel="onCancel" v-model="feedback" title="留言列表">
       <div class="feedback">
         <van-cell-group>
+          <h1 class="feedback-title">反馈列表</h1>
+          <div class="feedback-list">
+            <div class="meaasge-list" v-for="item in feedbacks" :key="item.id">
+              <div class="user-feedback">
+                <van-row>
+                  <van-col span="4">
+                    <van-image class="user-avatar" round width="2rem" height="2rem" :src="renPic"/>
+                  </van-col>
+                  <van-col span="16">
+                    <p>{{item.userName || '游客留言'}}</p>
+                    <p>{{item.comment}}</p>
+                  </van-col>
+                  <van-col span="4">
+                    <p>
+                      <van-icon size="18" name="good-job-o" /> <span>100</span>
+                    </p>
+                  </van-col>
+                </van-row>
+              </div>
+              <div class="feedback-reply" v-if="item.listReplays.length > 0">
+                <van-row>
+                  <van-col span="3" offset="4">
+                    <van-image class="our-avatar" round width="2rem" height="2rem" :src="renPic"/>
+                  </van-col>
+                  <van-col span="13">
+                    <p>用户名</p>
+                    <p>评论内容</p>
+                  </van-col>
+                  <van-col span="4">
+                    <p>
+                      <van-icon size="18" name="good-job-o" /> <span>100</span>
+                    </p>
+                  </van-col>
+                </van-row>
+              </div>
+            </div>
+          </div>
           <h1 class="feedback-title">反馈内容</h1>
           <van-field
             v-model="backMessage"
-            rows="5"
+            rows="1"
             autosize
             type="textarea"
             placeholder="请输入您的反馈信息" />
         </van-cell-group>
         <van-cell-group>
           <h1 class="feedback-title">您的联系方式</h1>
-          <van-field v-model="backPhone" placeholder="请输入用户名" />
+          <van-field v-model="backPhone" placeholder="请输入联系方式" />
         </van-cell-group>
         <div class="login-btn">
             <van-button round block type="info" @click="onCommit" color="linear-gradient(to right, #2739c8, #f51e67)">
@@ -69,6 +106,7 @@ import { mapState, mapActions, mapGetters } from "vuex";
 import * as type from "store/home/mutations_types";
 import { Dialog, Toast } from 'vant'
 import * as userType from 'store/user/mutations_types'
+import * as homeApi from 'api/home'
 export default {
   components:{
     Search,
@@ -93,6 +131,7 @@ export default {
       backPhone: '',
       remarkIcon: require('common/image/home/hollow-message.png'),
       shareIcon : require('common/image/home/hollow-share.png'),
+      renPic: require('common/image/home/ren.png'),
       shareOptions: [
         { name: '微信', icon: 'wechat' },
         { name: '微博', icon: 'weibo' },
@@ -104,7 +143,10 @@ export default {
         resId: '1',
         resType: 3,
         resName: '应用'
-      }
+      },
+      feedbacks: [],
+      pageNum: '1',
+      pageSize: '10'
     };
   },
   methods: {
@@ -240,12 +282,21 @@ export default {
         this.commentsNum = data.content.allnum
       }
 
+    },
+    async getFeedbackList () {
+      let pageData = { pageNum: this.pageNum, pageSize: this.pageSize}
+      let data = await homeApi.feedbackList(pageData)
+      console.log('留言列表',data)
+      if(data.code === '200') {
+        this.feedbacks = data.content.listx
+      }
     }
   },
   mounted() {
     this.getLikeNumber()
     this.getCollectionNumber()
     this.getCommentsNumber()
+    this.getFeedbackList()
   }
 };
 </script>
@@ -280,4 +331,28 @@ export default {
   border-width 0
 .feedback-title
   padding-left 15px
+.meaasge-list
+  margin-top 15px
+.feedback-list
+  // background red
+  height 300px
+  overflow-y scroll
+.user-avatar
+  position relative
+  left 20px
+  top 5px
+.our-avatar
+  position relative
+  top 5px
+.user-feedback
+  // background blue
+.feedback-reply
+  // background yellow
+.user-feedback p, .feedback-reply p
+  padding 5px 0
+  font-size 12px
+.user-feedback p span ,.feedback-reply p span
+  font-size 14px
+  position relative
+  top -3px
 </style>
