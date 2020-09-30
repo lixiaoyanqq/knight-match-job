@@ -18,53 +18,59 @@
     <card-list/>
     <card-footer />
     <!-- 反馈建议 -->
-    <van-action-sheet @cancel="onCancel" v-model="feedback" title="留言列表">
+    <van-action-sheet id="all-message" @cancel="onCancel" v-model="feedback" title="留言列表">
       <div class="feedback">
         <van-cell-group>
-          <h1 class="feedback-title">反馈列表</h1>
-          <div class="feedback-list">
-            <div class="meaasge-list" v-for="item in feedbacks" :key="item.id">
-              <div class="user-feedback">
-                <van-row>
-                  <van-col span="4">
-                    <van-image class="user-avatar" round width="2rem" height="2rem" :src="renPic"/>
-                  </van-col>
-                  <van-col span="16">
-                    <p>{{item.userName || '游客留言'}}</p>
-                    <p>{{item.comment}}</p>
-                  </van-col>
-                  <van-col span="4">
-                    <p>
-                      <van-icon size="18" name="good-job-o" /> <span>100</span>
-                    </p>
-                  </van-col>
-                </van-row>
+          <h1 class="feedback-title" v-if="feedbacks.length > 0">反馈列表</h1>
+          <van-pull-refresh v-model="msgRefreshing" @refresh="onMsgRefresh">
+            <!-- <van-list v-model="msgLoading" :immediate-check="false" :finished="msgFinished" finished-text="没有更多了" @load="onMsgLoad"> -->
+              <div ref="feedbackContent" id="feedback-content" class="feedback-list">
+                <div class="meaasge-list" v-for="item in feedbacks" :key="item.id">
+                    <div class="user-feedback">
+                      <van-row>
+                        <van-col span="4">
+                          <van-image class="user-avatar" round width="2rem" height="2rem" :src="renPic"/>
+                        </van-col>
+                        <van-col span="16">
+                          <p>{{item.userName || '游客留言'}}</p>
+                          <p>{{item.createTime}}</p>
+                          <p>{{item.comment}}</p>
+                        </van-col>
+                        <van-col span="4">
+                          <p>
+                            <van-icon @click="onPraiseUser(item)" size="18" :name="item.isAwesome === '1' ? msgPraiseIcon : msgNoPraiseIcon " /> <span>{{item.awesomeNum}}</span>
+                          </p>
+                        </van-col>
+                      </van-row>
+                    </div>
+                    <div class="feedback-reply" v-if="item.listReplays.length > 0">
+                      <van-row v-for="reply in item.listReplays" :key="reply.id">
+                        <van-col span="3" offset="4">
+                          <van-image class="our-avatar" round width="2rem" height="2rem" :src="renPic"/>
+                        </van-col>
+                        <van-col span="17">
+                          <p>{{reply.userName}}</p>
+                          <p>{{reply.createTime}}</p>
+                          <p>{{reply.comment}}</p>
+                        </van-col>
+                        <!-- <van-col span="4">
+                          <p>
+                            <van-icon size="18" @click="onPraiseOur(reply)" :name="reply.isAwesome === '1' ? msgPraiseIcon : msgNoPraiseIcon "  /> <span>{{reply.awesomeNum}}</span>
+                          </p>
+                        </van-col> -->
+                      </van-row>
+                    </div>
+                </div>
               </div>
-              <div class="feedback-reply" v-if="item.listReplays.length > 0">
-                <van-row>
-                  <van-col span="3" offset="4">
-                    <van-image class="our-avatar" round width="2rem" height="2rem" :src="renPic"/>
-                  </van-col>
-                  <van-col span="13">
-                    <p>用户名</p>
-                    <p>评论内容</p>
-                  </van-col>
-                  <van-col span="4">
-                    <p>
-                      <van-icon size="18" name="good-job-o" /> <span>100</span>
-                    </p>
-                  </van-col>
-                </van-row>
-              </div>
-            </div>
-          </div>
+            <!-- </van-list> -->
+          </van-pull-refresh>
           <h1 class="feedback-title">反馈内容</h1>
           <van-field
             v-model="backMessage"
             rows="1"
             autosize
             type="textarea"
-            placeholder="请输入您的反馈信息" />
+            placeholder="请输入您的反馈信息" /> 
         </van-cell-group>
         <van-cell-group>
           <h1 class="feedback-title">您的联系方式</h1>
@@ -118,15 +124,21 @@ export default {
   },
   data() {
     return {
+      msgRefreshing: false,
       feedback: false,
       showShare: false,
       isLisk: false,
+      isUserPraise: false,
       isCollection: false,
+      msgLoading: false,
+      msgFinished: false,
       likeNum: '',
       connectionNum: '',
       commentsNum: '',
       starIcon: require('common/image/home/hollow-collection.png'),
       likeIcon: require('common/image/home/hollow-heart.png'),
+      msgPraiseIcon: require('common/image/home/solid-like.png'),
+      msgNoPraiseIcon: require('common/image/home/hollow-like.png'),
       backMessage: '',
       backPhone: '',
       remarkIcon: require('common/image/home/hollow-message.png'),
@@ -145,8 +157,10 @@ export default {
         resName: '应用'
       },
       feedbacks: [],
+      msgbacks:'',
       pageNum: '1',
-      pageSize: '10'
+      pageSize: '500',
+      total: '1',
     };
   },
   methods: {
@@ -185,6 +199,7 @@ export default {
     onLiveMsg(){
       this.feedback = true
       this.remarkIcon = require('common/image/home/solid-message.png')
+      // this.loadHeight()
     },
     async onCommit(){
       let params = {
@@ -195,8 +210,12 @@ export default {
       }
       let data = await userApi.leaveMessage(params)
       if(data.code === '200') {
-        Toast.success('操作成功')
+        Toast.success('评论成功')
+        
+        this.backPhone = '',
+        this.backMessage = ''
         this.getCommentsNumber()
+        this.getFeedbackList()
       } else if (data.code === '0004') {
         Dialog.confirm({
             title: '退出提示',
@@ -204,7 +223,6 @@ export default {
             beforeClose: this.beforeClose
         })
       }
-      this.feedback = false
       this.remarkIcon = require('common/image/home/hollow-message.png')
     },
     onCancel(){
@@ -284,11 +302,74 @@ export default {
 
     },
     async getFeedbackList () {
-      let pageData = { pageNum: this.pageNum, pageSize: this.pageSize}
+      let that = this
+      let pageData = { pageNum: this.pageNum.toString(), pageSize: this.pageSize.toString() }
       let data = await homeApi.feedbackList(pageData)
-      console.log('留言列表',data)
       if(data.code === '200') {
         this.feedbacks = data.content.listx
+        console.log('this.feedbacks',this.feedbacks)
+        that.total = data.content.total
+        that.msgRefreshing = false
+        if (that.feedbacks.length >= that.total) {
+          that.msgFinished = true
+        }
+      }
+    },
+    onMsgRefresh () {
+      this.pageNum = '1'
+      this.msgRefreshing = false
+      this.getFeedbackList ()
+    },
+    //上拉加载
+    async onMsgLoad () {
+      console.log('上拉粗发')
+      this.pageNum++
+      let that = this
+      let pageData = { pageSize: this.pageSize.toString(), pageNum: this.pageNum.toString() }
+      let data = await homeApi.feedbackList(pageData)
+      if (data.code === '200' && data.content.listx.length > 0) {
+        that.msgbacks = data.content.listx
+        that.total = data.content.total
+        that.msgbacks.forEach( v => { that.feedbacks.push(v) })
+        this.msgLoading = false
+        if (this.feedbacks.length >= this.total) {
+          this.msgFinished = true
+        }
+      }
+    },
+    loadHeight () {
+      console.log('666')
+      // let winHeight = document.documentElement.clientHeigh  
+      let winHeight = this.$refs.feedbackContent.offsetHeight
+      console.log('winHeight',winHeight)
+      console.log('sd',document.getElementById('feedback-content'))
+      document.getElementById('feedback-content').style.minHeight = (winHeight - 80) +'px'
+    },
+    async onPraiseUser (item) {
+      console.log('给用户点赞',item)
+      let msgObj = {
+        resId: item.id,
+        resType: '4'
+      }
+      let data = await userApi.isLike(msgObj)
+      console.log('data',data)
+      if(data.code === '200') {
+        Toast.success('点赞成功')
+        if (data.content && data.content.recordStatus && data.content.recordStatus === '1') {
+          this.isUserPraise = true
+          this.getFeedbackList()
+        } else {
+          this.isUserPraise = false
+          this.getFeedbackList()
+        }
+      } else {
+        Toast.fail('操作失败')
+      }
+    },
+    onPraiseOur (reply) {
+      console.log('给我们点赞', reply)
+      let msgObj = {
+        
       }
     }
   },
@@ -335,7 +416,7 @@ export default {
   margin-top 15px
 .feedback-list
   // background red
-  height 300px
+  max-height 300px
   overflow-y scroll
 .user-avatar
   position relative

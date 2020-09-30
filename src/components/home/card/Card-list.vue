@@ -292,8 +292,10 @@ export default {
         },
         loadHeight () {
             let winHeight = document.documentElement.clientHeight
+            console.log('玩')
             if (this.userInfo.userType === '0') {
                 document.getElementById('position-content').style.minHeight = (winHeight - 300) +'px'
+                
             }
             if (this.userInfo.userType === '1') {
                 document.getElementById('resume-content').style.minHeight = (winHeight - 300) +'px'
