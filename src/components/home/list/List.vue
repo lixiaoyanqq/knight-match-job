@@ -307,7 +307,6 @@ export default {
       let data = await homeApi.feedbackList(pageData)
       if(data.code === '200') {
         this.feedbacks = data.content.listx
-        console.log('this.feedbacks',this.feedbacks)
         that.total = data.content.total
         that.msgRefreshing = false
         if (that.feedbacks.length >= that.total) {

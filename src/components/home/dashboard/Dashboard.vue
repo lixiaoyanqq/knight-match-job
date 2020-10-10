@@ -231,7 +231,6 @@ export default {
         let data = await dashboardApi.getDashboard()
         if(data && data.content){
           this.dashboard = data.content
-          console.log('this.dashboard',this.dashboard)
           if (data.content.perfection === null) {
             this.isLogin = false
           } else {
