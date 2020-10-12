@@ -78,7 +78,7 @@
                         name="industry"
                         :value="industry"
                         placeholder="所属领域"
-                        @click="onShowPicker('industry')"/>
+                        @click="onShowPicker('industry')"/> 
                 </van-cell-group>
                 <van-cell-group class="company-intro">
                     <label class="form-label" for="">公司介绍</label>
@@ -135,6 +135,7 @@ export default {
             leftIcon: require("common/image/home/lefticon.png"),
             uploader: [], 
             uploadEmptLogoUrl: '',
+            cityPickerName: '',
             compForm: {
                 entpName: '',
                 entpSimpleName: '',
@@ -253,6 +254,10 @@ export default {
         onConfirm(val) {
             this[this.pickerName] = val
             this.showPicker = false
+        },
+        onCityPicker(name) {
+            this.showCityPicker = true
+            this.cityPickerName = name
         },
         onCityConfirm (val) {
             let cityAddress = val[0].name + val[1].name + val[2].name

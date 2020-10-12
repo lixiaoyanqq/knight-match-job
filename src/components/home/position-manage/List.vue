@@ -22,7 +22,7 @@
                     </van-col>
                 </van-row>
             </div>
-            <div class="manage-card" v-loading="loading" v-for="(post, index) in postList.listx" :key="index">
+            <div class="manage-card" v-for="(post, index) in postList.listx" :key="index">
                 <h1 @click="onEdit(post)">{{post.postName || '-'}}</h1>
                 <ul>
                     <li>{{post.postSalary || '-'}}</li>
@@ -36,7 +36,12 @@
                     </li>
                 </ul>
                 <van-row type="flex">
-                    <van-col offset="20">
+                    <van-col offset="16" span="4">
+                        <van-button round type="primary" style="padding:0 10px" color="linear-gradient(to right, #2739c8, #f51e67)" size="mini" @click="onDeletePos(post)">
+                            删除
+                        </van-button>
+                    </van-col>
+                    <van-col span="4">
                         <van-button round type="primary" style="padding:0 10px" color="linear-gradient(to right, #2739c8, #f51e67)" size="mini" @click="onPushOrDown(post)">
                             {{post.publishStatus === '0' ? '上线' : '下线'}}
                         </van-button>
@@ -50,6 +55,7 @@
 import store from 'store'
 import * as type from 'store/home/mutations_types'
 import * as homeApi from 'api/home'
+import * as posApi from 'api/position'
 import { mapState, mapActions } from 'vuex'
 import { Toast, Dialog } from 'vant'
 export default {
@@ -78,6 +84,11 @@ export default {
         },
         onEdit (post) {
             this.$router.push({ name: 'openPosition', query: {id: post.id}})
+        },
+        async onDeletePos (event) {
+            console.log('删除',event)
+            // let data = await posApi.delRecruit(event.id)
+            // console.log('data',data)
         },
         onPushOrDown(event){
             let paramObj = {
