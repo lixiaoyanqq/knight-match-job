@@ -17,16 +17,6 @@ export function onDelivery(id){
     })
 }
 
-export function delRecruit (id) {
-    return fetch({
-        url: 'amj/recruit/del',
-        method: 'post',
-        data: {
-            id: id
-        }
-    })
-}
-
 export function commList(data){
     return fetch({
         url: 'amj/inter/comm/list',

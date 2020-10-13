@@ -81,6 +81,16 @@ export function switchPublish (data){
     })
 }
 
+export function delRecruit (id) {
+    return fetch({
+        url: 'amj/post/delPost',
+        method: 'post',
+        data: {
+            id: id
+        }
+    })
+}
+
 export function onePost (id) {
     return fetch({
         url: `amj/post/get/${id}`,

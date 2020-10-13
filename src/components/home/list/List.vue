@@ -77,7 +77,7 @@
           <van-field v-model="backPhone" placeholder="请输入联系方式" />
         </van-cell-group>
         <div class="login-btn">
-            <van-button round block type="info" @click="onCommit" color="linear-gradient(to right, #2739c8, #f51e67)">
+            <van-button round block type="info" :disabled="backMessage.length <= 0" @click="onCommit" color="linear-gradient(to right, #2739c8, #f51e67)">
                 提交反馈
             </van-button>
         </div>

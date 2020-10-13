@@ -55,9 +55,8 @@
 import store from 'store'
 import * as type from 'store/home/mutations_types'
 import * as homeApi from 'api/home'
-import * as posApi from 'api/position'
 import { mapState, mapActions } from 'vuex'
-import { Toast, Dialog } from 'vant'
+import { Toast, Dialog, Notify } from 'vant'
 export default {
     data () {
         return {
@@ -87,8 +86,13 @@ export default {
         },
         async onDeletePos (event) {
             console.log('删除',event)
-            // let data = await posApi.delRecruit(event.id)
-            // console.log('data',data)
+            let data = await homeApi.delRecruit(event.id)
+            if(data.code === '200') {
+                Toast.success('删除成功')
+                this.getPostList()
+            } else {
+                Toast.fail('删除失败')
+            }
         },
         onPushOrDown(event){
             let paramObj = {
