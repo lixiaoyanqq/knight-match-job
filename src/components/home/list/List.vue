@@ -113,6 +113,7 @@ import * as type from "store/home/mutations_types";
 import { Dialog, Toast } from 'vant'
 import * as userType from 'store/user/mutations_types'
 import * as homeApi from 'api/home'
+import wx from 'weixin-js-sdk'
 export default {
   components:{
     Search,
@@ -145,11 +146,11 @@ export default {
       shareIcon : require('common/image/home/hollow-share.png'),
       renPic: require('common/image/home/ren.png'),
       shareOptions: [
-        { name: '微信', icon: 'wechat' },
-        { name: '微博', icon: 'weibo' },
-        { name: '复制链接', icon: 'link' },
-        { name: '分享海报', icon: 'poster' },
-        { name: '二维码', icon: 'qrcode' },
+        { name: '微信', icon: 'wechat', desc:'微信分享介绍', imgUrl:'微信分享图片', link:'微信分享链接', title:'微信分享标题'},
+        { name: '微博', icon: 'weibo', desc:'微博分享介绍', imgUrl:'微博分享图片', link:'微博分享链接', title:'微博分享标题' },
+        { name: '复制链接', icon: 'link', desc:'链接分享介绍', imgUrl:'链接分享图片', link:'链接分享链接', title:'链接分享标题' },
+        { name: '分享海报', icon: 'poster', desc:'海报分享介绍', imgUrl:'海报分享图片', link:'海报分享链接', title:'海报分享标题' },
+        { name: '二维码', icon: 'qrcode', desc:'二维码分享介绍', imgUrl:'二维码分享图片', link:'二维码分享链接', title:'二维码分享标题' },
       ],
       prms: {
         resId: '1',
@@ -161,6 +162,14 @@ export default {
       pageNum: '1',
       pageSize: '500',
       total: '1',
+      share: {
+        title :'',
+        link : '',
+        imgUrl : '',
+        desc : ''
+      },
+      // gourl: location.href.split('#')[0],
+      gourl: 'http://amj.yizijob.com'
     };
   },
   methods: {
@@ -229,10 +238,103 @@ export default {
       this.feedback = false
       this.remarkIcon = require('common/image/home/hollow-message.png')
     },
-    onSelect(option){
-      Toast(option.name)
-      this.showShare = false
-      this.shareIcon = require('common/image/home/hollow-share.png')
+    async onSelect(option){
+      // Toast(option.name)
+      // this.showShare = false
+      // this.shareIcon = require('common/image/home/hollow-share.png')
+      console.log('option',option)
+      this.share.title = option.title
+      this.share.link = option.link
+      this.share.imgUrl = option.imgUrl
+      this.share.desc = option.desc
+      console.log('share',this.share)
+      let pramsData = {}
+      pramsData.gourl = this.gourl
+      console.log('pramsData',pramsData)
+      let data = await homeApi.getSignature(pramsData)
+      console.log('data',data)
+      if (data.code === '200') {
+        this.wxjs4post(data.content.timestamp,data.content.nonceStr,data.content.signature,this.share)
+      }
+    },
+    wxjs4post(time,nonceStr,signature,share){
+      console.log('time',time)
+      console.log('nonceStr',nonceStr)
+      console.log('signature',signature)
+      console.log('share',share)
+      wx.config({
+        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        appId: 'wxc6f2e83fc1f53576', // 必填，公众号的唯一标识
+        timestamp: time, // 必填，生成签名的时间戳
+        nonceStr: nonceStr, // 必填，生成签名的随机串
+        signature: signature,// 必填，签名，见附录1
+        jsApiList: [
+          'checkJsApi',
+            'onMenuShareWeibo',
+            'onMenuShareQZone',
+            'onMenuShareTimeline',
+            'onMenuShareAppMessage',
+            'hideMenuItems',
+            'showMenuItems',
+            'onMenuShareQQ'
+          ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+      })
+      wx.ready(() => {
+        //获取“分享到朋友圈”按钮点击状态及自定义分享内容接口
+        wx.onMenuShareTimeline({
+          title: share.title, // 分享标题
+          link: share.link, // 分享链接
+          imgUrl: share.imgUrl, // 分享图标
+          success: function () {
+            // 用户确认分享后执行的回调函数
+          },
+          cancel: function () { 
+            // 用户取消分享后执行的回调函数
+          }
+        })
+
+        //获取“分享给朋友”按钮点击状态及自定义分享内容接口
+        wx.onMenuShareAppMessage({
+          title: share.title, // 分享标题
+          desc: share.desc, // 分享描述
+          link: share.link, // 分享链接
+          imgUrl: share.imgUrl, // 分享图标
+          // type: '', // 分享类型,music、video或link，不填默认为link
+          // dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+          success: function () { 
+              // 用户确认分享后执行的回调函数
+          },
+          cancel: function () { 
+              // 用户取消分享后执行的回调函数
+          }
+        })
+
+        //获取“分享到QQ”按钮点击状态及自定义分享内容接口
+        wx.onMenuShareQQ({
+
+        })
+
+        //获取“分享到QQ空间”按钮点击状态及自定义分享内容接口
+        wx.onMenuShareQZone({
+
+        })
+
+        wx.checkJsApi({
+          jsApiList: [
+            'onMenuShareWeibo',
+            'onMenuShareQZone',
+            'onMenuShareTimeline',
+            'onMenuShareAppMessage',
+            'hideMenuItems',
+            'showMenuItems',
+            'onMenuShareQQ'
+          ],
+          success: function(res){
+              //alert(res);
+          }
+          // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
+        })
+      })
     },
     onTransmit(){
       this.showShare = true

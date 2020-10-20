@@ -12,10 +12,18 @@
                 <van-swipe-item  v-for="(top, index) in postTop5" :key="index">
                     <div :class="'slider-card' + (index + 1)" class="slider-card">
                         <div class="slider-content">
-                            <h1 class="view-value" @click="onPosDetail(top.id)">
-                                {{top.postName}}
-                                <van-icon :name="intoDetailIcon" size="50" />
-                            </h1>
+                            <div class="cont-name">
+                                <van-row>
+                                    <van-col span="16">
+                                        <h1 class="view-value" @click="onPosDetail(top.id)">
+                                            {{top.postName}}
+                                        </h1>
+                                    </van-col>
+                                    <van-col span="8">
+                                        <van-icon :name="intoDetailIcon" size="50" />
+                                    </van-col>
+                                </van-row>
+                            </div>
                             <p class="view-value">{{top.entpName}}</p>
                             <p>{{top.reflushFmtTime}}</p>
                             <p class="view-value">{{top.city}}</p>
@@ -210,11 +218,16 @@ export default {
     margin  0 auto
     padding-top 110px
     color $color-text
-.slider-content h1
+.slider-content .cont-name 
+    // position relative
+.slider-content .cont-name h1
     font-size 18px
-    line-height 32px
+    line-height 55px
     font-weight bolder
-    padding 0 10px
+    padding-left 10px
+.slider-content .cont-name .van-icon
+    animation mymove 1s infinite
+    -webkit-animation mymove 1s infinite
 .slider-content p
     line-height 24px
     padding 0 10px
@@ -225,11 +238,6 @@ export default {
 .slider-content span 
     font-size 14px
     padding-left 5px
-.slider-content h1 .van-icon
-    animation mymove 1s infinite
-    -webkit-animation mymove 1s infinite
-    position relative
-    top 16px
 .view-value
   display -webkit-box
   overflow hidden

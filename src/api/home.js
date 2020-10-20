@@ -1,4 +1,5 @@
 import fetch from 'utils/fetch'
+// import sdkFetch from 'utils/sdkFetch'
 
 export function getCity(){
     return fetch({
@@ -159,5 +160,14 @@ export function feedbackList (data) {
             pageNum: data.pageNum,
             pageSize: data.pageSize
         }
+    })
+}
+
+//获取微信签名
+export function getSignature (data) {
+    return fetch({
+        url: 'amj/inter/wxshare/gotoPage',
+        method: 'post',
+        data: data
     })
 }
