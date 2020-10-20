@@ -114,6 +114,7 @@ import { Dialog, Toast } from 'vant'
 import * as userType from 'store/user/mutations_types'
 import * as homeApi from 'api/home'
 import wx from 'weixin-js-sdk'
+import { setShareInfo } from '@fxss5201/wx-qq-share'
 export default {
   components:{
     Search,
@@ -163,13 +164,13 @@ export default {
       pageSize: '500',
       total: '1',
       share: {
-        title :'',
-        link : '',
-        imgUrl : '',
-        desc : ''
+        title :'北京高校大学生优秀创业团队评选',
+        link : 'http://weixin.yizijob.com/static/activity/education/index.html?flag=1',
+        imgUrl : 'http://weixin.yizijob.com/static/activity/education/img/share.jpg',
+        desc : '2018年度北京高校大学生优秀创业团队评选决赛决赛正在椅子网APP直播，速来围观！'
       },
-      // gourl: location.href.split('#')[0],
-      gourl: 'http://amj.yizijob.com'
+      gourl: location.href.split('#')[0],
+      // gourl: 'http://amj.yizijob.com'
     };
   },
   methods: {
@@ -238,16 +239,12 @@ export default {
       this.feedback = false
       this.remarkIcon = require('common/image/home/hollow-message.png')
     },
-    async onSelect(option){
+    onSelect(){
       // Toast(option.name)
       // this.showShare = false
       // this.shareIcon = require('common/image/home/hollow-share.png')
-      console.log('option',option)
-      this.share.title = option.title
-      this.share.link = option.link
-      this.share.imgUrl = option.imgUrl
-      this.share.desc = option.desc
-      console.log('share',this.share)
+    },
+    async onTransmit(){
       let pramsData = {}
       pramsData.gourl = this.gourl
       console.log('pramsData',pramsData)
@@ -255,15 +252,12 @@ export default {
       console.log('data',data)
       if (data.code === '200') {
         this.wxjs4post(data.content.timestamp,data.content.nonceStr,data.content.signature,this.share)
+        this.qqShare(data)
       }
     },
     wxjs4post(time,nonceStr,signature,share){
-      console.log('time',time)
-      console.log('nonceStr',nonceStr)
-      console.log('signature',signature)
-      console.log('share',share)
       wx.config({
-        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
         appId: 'wxc6f2e83fc1f53576', // 必填，公众号的唯一标识
         timestamp: time, // 必填，生成签名的时间戳
         nonceStr: nonceStr, // 必填，生成签名的随机串
@@ -311,12 +305,30 @@ export default {
 
         //获取“分享到QQ”按钮点击状态及自定义分享内容接口
         wx.onMenuShareQQ({
-
+          title: share.title, // 分享标题
+          desc: share.desc, // 分享描述
+          link: share.link, // 分享链接
+          imgUrl: share.imgUrl, // 分享图标
+          success: function () { 
+              // 用户确认分享后执行的回调函数
+          },
+          cancel: function () { 
+              // 用户取消分享后执行的回调函数
+          }
         })
 
         //获取“分享到QQ空间”按钮点击状态及自定义分享内容接口
         wx.onMenuShareQZone({
-
+          title: share.title, // 分享标题
+          desc: share.desc, // 分享描述
+          link: share.link, // 分享链接
+          imgUrl: share.imgUrl, // 分享图标
+          success: function () { 
+              
+            },
+          cancel: function () { 
+              
+          }
         })
 
         wx.checkJsApi({
@@ -336,10 +348,25 @@ export default {
         })
       })
     },
-    onTransmit(){
-      this.showShare = true
-      this.shareIcon = require('common/image/home/solid-share.png')
+    qqShare(data) {
+      setShareInfo({
+        title:     this.share.title,
+        summary:   this.share.desc,
+        pic:       this.share.imgUrl,
+        url:       this.share.link,
+        WXconfig:       {//如果想微信里分享必选加，否之可去掉
+            swapTitleInWX: true,
+            appId : 'wxc6f2e83fc1f53576',
+            timestamp : data.content.timestamp,
+            nonceStr : data.content.nonceStr,
+            signature : data.content.signature
+        }
+      })
     },
+    // onTransmit(){
+    //   this.showShare = true
+    //   this.shareIcon = require('common/image/home/solid-share.png')
+    // },
     onCancelShare(){
       this.shareIcon = require('common/image/home/hollow-share.png')
     },

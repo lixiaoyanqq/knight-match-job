@@ -27,6 +27,7 @@
     "weixin-js-sdk": "^1.6.0"
   },
   "devDependencies": {
+    "@fxss5201/wx-qq-share": "^0.1.4",
     "autoprefixer": "^7.1.2",
     "babel-core": "^6.22.1",
     "babel-eslint": "^8.2.1",
