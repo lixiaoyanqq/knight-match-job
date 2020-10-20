@@ -9,7 +9,7 @@
       <section class="sider-nav">
          <van-icon :name="likeIcon" :badge="likeNum"  @click="onLike" />
          <van-icon :name="remarkIcon" :badge="commentsNum" @click="onLiveMsg" />
-         <van-icon :name="shareIcon" @click="onTransmit" />
+         <!-- <van-icon :name="shareIcon" @click="onTransmit" /> -->
          <van-icon :name="starIcon" :badge="connectionNum" @click="onCollect" />
       </section>
     <!-- </van-sticky> -->
@@ -164,10 +164,10 @@ export default {
       pageSize: '500',
       total: '1',
       share: {
-        title :'北京高校大学生优秀创业团队评选',
-        link : 'http://weixin.yizijob.com/static/activity/education/index.html?flag=1',
-        imgUrl : 'http://weixin.yizijob.com/static/activity/education/img/share.jpg',
-        desc : '2018年度北京高校大学生优秀创业团队评选决赛决赛正在椅子网APP直播，速来围观！'
+        title :'AI 招聘（AI MATCH JOB)',
+        link : 'http://amj.yizijob.com',
+        imgUrl : require("common/image/home/default-avatar.jpeg"),
+        desc : 'AI 智能招聘-精准匹配(工作、公司、人才)'
       },
       gourl: location.href.split('#')[0],
       // gourl: 'http://amj.yizijob.com'
