@@ -166,8 +166,8 @@ export default {
       share: {
         title :'AI 招聘（AI MATCH JOB)',
         link : 'http://amj.yizijob.com',
-        imgUrl : require("common/image/home/default-avatar.jpeg"),
-        desc : 'AI 智能招聘-精准匹配(工作、公司、人才)'
+        imgUrl : 'http://video.yizijob.com/media/20201020/oper/videoCover/1603195355202.jpg',
+        desc : 'AI 智能招聘-精准匹配(工作、公司、人才), 大数据智能匹配，只为您的满意。'
       },
       gourl: location.href.split('#')[0],
       // gourl: 'http://amj.yizijob.com'
