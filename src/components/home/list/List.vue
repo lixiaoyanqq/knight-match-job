@@ -164,10 +164,10 @@ export default {
       pageSize: '500',
       total: '1',
       share: {
-        title :'AI 招聘（AI MATCH JOB)',
-        link : 'http://amj.yizijob.com',
-        imgUrl : 'http://video.yizijob.com/media/20201020/oper/videoCover/1603195355202.jpg',
-        desc : 'AI 智能招聘-精准匹配(工作、公司、人才), 大数据智能匹配，只为您的满意。'
+        title :'北京高校大学生优秀创业团队评选',
+        link : 'http://weixin.yizijob.com/static/activity/education/index.html?flag=1',
+        imgUrl : 'http://weixin.yizijob.com/static/activity/education/img/share.jpg',
+        desc : '2018年度北京高校大学生优秀创业团队评选决赛决赛正在椅子网APP直播，速来围观！'
       },
       gourl: location.href.split('#')[0],
       // gourl: 'http://amj.yizijob.com'
