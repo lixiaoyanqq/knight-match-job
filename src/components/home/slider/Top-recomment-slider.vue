@@ -38,10 +38,22 @@
                 <van-swipe-item  v-for="(top, index) in resumeTop5" :key="index">
                     <div :class="'slider-card' + (index + 1)" class="slider-card">
                         <div class="slider-content">
-                            <h1 @click="onResDetail(top.cvId)">
+                            <!-- <h1>
                                 {{top.name || '-'}}
                                 <van-icon :name="intoDetailIcon" size="50" />
-                            </h1>
+                            </h1> -->
+                            <div class="cont-name">
+                                <van-row>
+                                    <van-col span="16">
+                                        <h1 class="view-value" @click="onResDetail(top.cvId)">
+                                            {{top.name || '-'}}
+                                        </h1>
+                                    </van-col>
+                                    <van-col span="8">
+                                        <van-icon :name="intoDetailIcon" size="50" />
+                                    </van-col>
+                                </van-row>
+                            </div>
                             <p>{{top.schoolName || '-'}}</p>
                             <p>{{top.degree || '-'}}</p>
                             <p>{{top.major || '-'}}</p>

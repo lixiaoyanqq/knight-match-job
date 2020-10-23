@@ -10,8 +10,8 @@
                 <van-icon :name="leftIcon" size="20" />
             </template>
         </van-nav-bar>
-    <section class="feedback-main">
-        <div class="feedback">
+        <section class="feedback-main">
+            <div class="feedback">
             <van-cell-group>
             <h1>反馈内容</h1>
             <van-field
@@ -26,12 +26,28 @@
             <van-field v-model="backPhone" placeholder="请输入用户名" /> -->
             </van-cell-group>
             <div class="login-btn">
-                <van-button round block type="info" @click="onCommit" color="linear-gradient(to right, #2739c8, #f51e67)">
+                <van-button :disabled="backMessage.length <= 0" round block type="info" @click="onCommit" color="linear-gradient(to right, #2739c8, #f51e67)">
                     提交反馈
                 </van-button>
             </div>
         </div>
         </section>
+        <div id="feedback-content" class="feedback-list">
+            <div class="meaasge-list" v-for="item in feedbacks" :key="item.id">
+                <div class="user-feedback">
+                    <van-row>
+                    <van-col span="4">
+                        <van-image class="user-avatar" round width="2rem" height="2rem" :src="renPic"/>
+                    </van-col>
+                    <van-col span="16">
+                        <p>{{item.userName || '游客留言'}}</p>
+                        <p>{{item.createTime}}</p>
+                        <p>{{item.comment}}</p>
+                    </van-col>
+                    </van-row>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 <script>
@@ -44,7 +60,9 @@ export default {
             leftIcon: require("common/image/home/lefticon.png"),
             userInfo: JSON.parse(getLocalStore('baseInfo')) || { userStatus : '1'},
             backMessage: '',
-            userName: ''
+            userName: '',
+            feedbacks: [],
+            renPic: require('common/image/home/ren.png'),
         }
     },
     methods: {
@@ -61,9 +79,25 @@ export default {
              userApi.leaveMessage(problem).then(res => {
                 if(res.code === '200')
                     Toast.success('操作成功')
+                    this.feedbackList()
+                    this.backMessage = ''
                 })
-                this.$router.back()
+        },
+        async feedbackList() {
+            let reqData = {
+                resType: '3',
+                pageNum: '1',
+                pageSize: '100'
+            }
+            let data = await userApi.leaveMessageList(reqData)
+            console.log('data',data)
+            if (data.code === '200') {
+                this.feedbacks = data.content.listx
+            }
         }
+    },
+    mounted () {
+        this.feedbackList()
     }
 }
 </script>
@@ -84,4 +118,21 @@ export default {
 .login-btn
     width 50%
     margin 20px auto
+.feedback-list
+    color black
+    max-height 300px
+    overflow-y scroll
+.meaasge-list
+  margin-top 15px
+.user-feedback p, .feedback-reply p
+  padding 5px 0
+  font-size 12px
+.user-feedback p span ,.feedback-reply p span
+  font-size 14px
+  position relative
+  top -3px
+.user-avatar
+  position relative
+  left 20px
+  top 5px
 </style>

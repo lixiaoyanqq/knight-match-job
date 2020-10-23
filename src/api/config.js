@@ -4,10 +4,10 @@
 // export const BASE_URL = 'http://192.168.7.194:9013'
 
 export const  SDK_URL = 'http://192.168.6.115:9009'
-// export const  BASE_URL = 'http://test.yizijob.com:9013'
-export const  BASE_URL = 'http://amj.yizijob.com'
+export const  BASE_URL = 'http://test.yizijob.com:9013'
+// export const  BASE_URL = 'https://amj.yizijob.com'
 
-export const ERR_OK = 0
+export const ERR_OK = 0 
 
 export const commonParams = {
 

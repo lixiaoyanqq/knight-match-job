@@ -164,10 +164,10 @@ export default {
       pageSize: '500',
       total: '1',
       share: {
-        title :'北京高校大学生优秀创业团队评选',
-        link : 'http://weixin.yizijob.com/static/activity/education/index.html?flag=1',
-        imgUrl : 'http://weixin.yizijob.com/static/activity/education/img/share.jpg',
-        desc : '2018年度北京高校大学生优秀创业团队评选决赛决赛正在椅子网APP直播，速来围观！'
+        title :'AI 招聘（AI MATCH JOB）',
+        link : 'http://amj.yizijob.com',
+        imgUrl : 'http://video.yizijob.com/media/20201020/oper/videoCover/1603195355202.t640x640.jpg',
+        desc : '智能匹配，人才画像，企业画像，人才与企业的精准智能匹配，让找工作更加简单，让招聘人才更加便捷'
       },
       gourl: location.href.split('#')[0],
       // gourl: 'http://amj.yizijob.com'
@@ -239,12 +239,16 @@ export default {
       this.feedback = false
       this.remarkIcon = require('common/image/home/hollow-message.png')
     },
-    onSelect(){
+    async onSelect(){
+    // async onTransmit(){
+    // onSelect(){
       // Toast(option.name)
-      // this.showShare = false
-      // this.shareIcon = require('common/image/home/hollow-share.png')
+      this.showShare = false
+      this.shareIcon = require('common/image/home/hollow-share.png')
     },
-    async onTransmit(){
+    // async onTransmit(){
+      // async onSelect(){
+    async wqShare() {
       let pramsData = {}
       pramsData.gourl = this.gourl
       console.log('pramsData',pramsData)
@@ -257,7 +261,7 @@ export default {
     },
     wxjs4post(time,nonceStr,signature,share){
       wx.config({
-        debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
         appId: 'wxc6f2e83fc1f53576', // 必填，公众号的唯一标识
         timestamp: time, // 必填，生成签名的时间戳
         nonceStr: nonceStr, // 必填，生成签名的随机串
@@ -502,6 +506,7 @@ export default {
     }
   },
   mounted() {
+    this.wqShare()
     this.getLikeNumber()
     this.getCollectionNumber()
     this.getCommentsNumber()
